@@ -98,8 +98,7 @@ class OverlayService : Service() {
             type,
             0
                     or LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                    or LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                    or LayoutParams.FLAG_NOT_FOCUSABLE,
+                    or LayoutParams.FLAG_LAYOUT_NO_LIMITS,
             PixelFormat.RGBA_8888
         )
 
