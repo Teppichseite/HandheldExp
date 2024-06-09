@@ -62,6 +62,7 @@ The full steps will be described soon.
 
 ## 🎖️ Acknowlegements
 1. [OdinTools](https://github.com/langerhans/OdinTools) for figuring out on how to change Ayn Odin 2 **device specific settings** and gaining access to a **privileged shell executor**
+2. [ES-DE GitLab project](https://gitlab.com/es-de/emulationstation-de) for certain **assets** like fonts or images
 
 
 
