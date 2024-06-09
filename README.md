@@ -39,10 +39,11 @@ The following shows the currently **supported devices** and its features
 
 ## 🚀 Steps for the future
 1. Supporting **more Settings** via the in game menu 
+2. Supporting displaying of the **Game Manual** which comes from ES-DE
 2. Provding a **proper app exit** approach which does not require simulated touch events
 3. Supporting **Quck Save** and **Quick Load** for most Emulators
-4. Supporting the most common **Android Handhels**
-5. Supporting **auto remembering** of settings per game
+4. Supporting the most common **Android Handhels** 
+6. Supporting **auto remembering** of settings per game
 
 
 ## ⚙️ Setup
