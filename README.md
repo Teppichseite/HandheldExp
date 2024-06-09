@@ -1,5 +1,5 @@
 # HandheldExp
-An **in game menu** for ES-DE on Android.
+An **in game menu** for [ES-DE](https://es-de.org/) on Android.
 
 <img src="./assets/images/showcase-static.png" alt="Showcase static" width="600"/>
 
@@ -11,7 +11,7 @@ which is **drastically different** across other emulators and towards the fronte
 Additionally on Android Emulation Handhelds performing **certain actions** or changing **Android settings** during a play session requires most of the time **touch input**.
 
 **HandheldExp** solves to aim these issues by providing **three key contributions**: 
-1. **Full integration** with ES-DE on Android
+1. **Full integration** with [ES-DE](https://es-de.org/) on Android
 2. **Uniform** in game menu across all emulators and apps 
 3. Supporting the most **important actions** for a play session via **controller input**
 
@@ -45,17 +45,23 @@ The following shows the currently **supported devices** and its features
 5. Supporting **auto remembering** of settings per game
 
 
-## 🏭 Setup
+## ⚙️ Setup
 **Overall the following apps will be required**
-1. ES-DE Android as Frontend
-2. AnyHome to set ES-DE as home app
-3. Keymapper to map the opening and closing button for the Menu
+1. [ES-DE](https://es-de.org/#Download) Android as Frontend
+2. [AnyHome](https://play.google.com/store/apps/details?id=com.draco.anyhome&hl=en) to set ES-DE as home app
+3. [Keymapper](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper&hl=de) to map the opening and closing button for the Menu
 4. HandheldExp for the Menu itself
 
-The full steps will be described soon
+The full steps will be described soon.
+
+## 🛠️ Building
+1. Guide will follow
+
+## 🏭 Development
+1. Guide will follow
 
 ## 🎖️ Acknowlegements
-1. OdinTools for figuring out on how to change Ayn Odin 2 **device specific settings** and gaining access to a **privileged shell executor**
+1. [OdinTools](https://github.com/langerhans/OdinTools) for figuring out on how to change Ayn Odin 2 **device specific settings** and gaining access to a **privileged shell executor**
 
 
 
