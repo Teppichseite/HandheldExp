@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:paddingLeft="100dip"
+    android:paddingRight="100dip"
+    android:paddingTop="50dip"
+    android:paddingBottom="50dip"
+    android:textAlignment="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="1"
+        android:clipToOutline="true"
+        android:background="@drawable/rounded_bg"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:text="Play Menu"
+            android:background="@color/frame"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textColor="@color/text"
+            android:fontFamily="@font/akrobat_semibold"
+            android:textSize="42dip" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:weightSum="5">
+
+            <LinearLayout
+                android:id="@+id/gameContextHolder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:weightSum="3">
+
+
+                    <ImageView
+                        android:id="@+id/gameContextImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0px"
+                        android:layout_weight="2"
+                        android:src="@drawable/ic_launcher_background" />
+
+                    <TextView
+                        android:id="@+id/gameContextGameName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dip"
+                        android:textAllCaps="true"
+                        android:textSize="20dip"
+                        android:text="Game title"
+                        android:fontFamily="@font/akrobat_bold"
+                        android:textAlignment="center"
+                        android:textColor="@color/text"
+                        />
+
+                    <TextView
+                        android:id="@+id/gameContextSystemName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="system"
+                        android:fontFamily="@font/akrobat_semibold"
+                        android:textAlignment="center"
+                        android:textAllCaps="true"
+                        android:textSize="18dip"
+                        android:textColor="@color/text"
+                        />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1px"
+                    android:layout_height="match_parent"
+                    android:background="@color/divider" />
+
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/itemList"
+                android:layout_weight="2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="30dip"
+            android:background="@color/frame"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

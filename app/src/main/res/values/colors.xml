@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="menu">#151515</color>
+    <color name="frame">#191919</color>
+    <color name="background">#80000000</color>
+    <color name="text">#8b8b8b</color>
+    <color name="focus">#000000</color>
+    <color name="divider">#303030</color>
+    <color name="button">#000000</color>
+</resources>

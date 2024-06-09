@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/item_selector"
+    >
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/label"
+            android:textColor="@color/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="22dip"
+            android:text="Test"
+            android:textAllCaps="true"
+            android:layout_weight="1"
+            android:fontFamily="@font/akrobat_semibold"
+            android:padding="2dp"/>
+
+        <LinearLayout
+            android:id="@+id/selector"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:tint="@color/text"
+                android:layout_width="16dip"
+                android:layout_height="16dip"
+                android:rotation="180"
+                android:src="@drawable/option_arrow" />
+
+            <TextView
+                android:id="@+id/value"
+                android:textColor="@color/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22dip"
+                android:text="Test"
+                android:textAllCaps="true"
+                android:fontFamily="@font/akrobat_semibold"
+                android:padding="2dp"/>
+
+            <ImageView
+                android:tint="@color/text"
+                android:layout_width="16dip"
+                android:layout_height="16dip"
+                android:src="@drawable/option_arrow" />
+            
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/divider" />
+</LinearLayout>
