@@ -10,9 +10,9 @@ which is **drastically different** across other emulators and towards the fronte
 
 Additionally on Android Emulation Handhelds performing **certain actions** or changing **Android settings** during a play session requires most of the time **touch input**.
 
-HandheldExp solves to aim these issues by providing three key aspects: 
+**HandheldExp** solves to aim these issues by providing **three key contributions**: 
 1. **Full integration** with ES-DE on Android
-2. **Uniform **in game menu across all emulators and apps 
+2. **Uniform** in game menu across all emulators and apps 
 3. Supporting the most **important actions** for a play session via **controller input**
 
 In the end the goal is to provide a **seamless handheld experience** for Android as seen in the short showcase here:
@@ -21,10 +21,10 @@ In the end the goal is to provide a **seamless handheld experience** for Android
 
 
 
-## 📱 Current State
+## 🎛️ Current State
 The following shows the currently **supported devices** and its features
 
-### Retroid Pocket 4 Pro
+### 🤖 Retroid Pocket 4 Pro
 **Supported features**
 1. In game Menu opening and closing
 2. Display of game title, emulator and image provided by ES-DE
