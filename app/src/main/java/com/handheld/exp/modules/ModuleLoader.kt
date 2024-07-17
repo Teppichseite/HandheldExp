@@ -24,8 +24,9 @@ class ModuleLoader(
         val emulatorModule = EmulatorModule(context, viewModel, overlayView)
         emulatorModule.onLoad()
 
-        val rp4ProModule = Rp4ProModule(context, viewModel, overlayView)
-        rp4ProModule.onLoad()
+        // Disabled for now since newest RP4Pro Firmware breaks functionalities
+        // val rp4ProModule = Rp4ProModule(context, viewModel, overlayView)
+        // rp4ProModule.onLoad()
 
         viewModel.notifyMenuItemsChanged()
     }

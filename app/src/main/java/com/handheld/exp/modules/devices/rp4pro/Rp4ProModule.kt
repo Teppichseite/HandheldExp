@@ -11,6 +11,8 @@ import com.handheld.exp.modules.Module
 class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
+    private val shellExecutor = Rp4ProShellRunner()
+
     private val quickSettings = NavigationItem("Quick Settings", "quick_settings", sortKey = "k0")
 
     private val performanceModeOptions = listOf(
@@ -26,7 +28,7 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         sortKey = "a",
         options = performanceModeOptions
     ) {
-
+        onPerformanceModeOptionChange(it)
     }
 
     private val fanModeOptions = listOf(
@@ -43,7 +45,7 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         sortKey = "b",
         options = fanModeOptions
     ) {
-
+        onFanModeOptionChange(it)
     }
 
     private val l2r2ModeOptions = listOf(
@@ -59,14 +61,83 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         sortKey = "c",
         options = l2r2ModeOptions
     ) {
+        onl2r2OptionChange(it)
     }
 
-
     override fun onLoad() {
+
+        refreshItems()
+        //observeGameContext()
+
         overlayViewModel.menuItems.value!!.add(quickSettings)
         overlayViewModel.menuItems.value!!.add(performanceModeItem)
         overlayViewModel.menuItems.value!!.add(fanModeItem)
         overlayViewModel.menuItems.value!!.add(l2r2ModeItem)
+    }
+
+    private fun refreshItems() {
+        performanceModeItem.setOption(
+            getDeviceSetting(PERFORMANCE_MODE)
+        )
+
+        fanModeItem.setOption(
+            getDeviceSetting(FAN_MODE)
+        )
+
+        l2r2ModeItem.setOption(
+            getDeviceSetting(L2R2_MODE)
+        )
+    }
+
+    private fun onPerformanceModeOptionChange(option: Option) {
+        setDeviceSetting(PERFORMANCE_MODE, option.key)
+
+        if (option.key == PERFORMANCE_MODE_PERFORMANCE || option.key == PERFORMANCE_MODE_HIGH_PERFORMANCE) {
+            fanModeItem.options = fanModeOptions.filter { it.key != FAN_MODE_OFF }
+        } else {
+            fanModeItem.options = fanModeOptions
+        }
+
+        fanModeItem.setOption(getDeviceSetting(FAN_MODE))
+
+        overlayViewModel.notifyMenuItemsChanged()
+    }
+
+    private fun onFanModeOptionChange(option: Option) {
+        setDeviceSetting(FAN_MODE, option.key)
+        overlayViewModel.notifyMenuItemsChanged()
+    }
+
+    private fun onl2r2OptionChange(option: Option) {
+        setDeviceSetting(L2R2_MODE, option.key)
+        overlayViewModel.notifyMenuItemsChanged()
+    }
+
+    private fun getDeviceSetting(settingKey: String): String {
+        return shellExecutor.getIntSystemSetting(settingKey, -1)
+            .toString()
+    }
+
+    private fun setDeviceSetting(settingKey: String, value: String) {
+        shellExecutor.setIntSystemSetting(settingKey, value.toInt())
+    }
+
+    private fun onGameContextEnd() {
+        performanceModeItem.setOption(
+            PERFORMANCE_MODE_STANDARD
+        )
+        performanceModeItem.notifyOnOptionChange()
+
+        fanModeItem.setOption(FAN_MODE_OFF)
+        fanModeItem.notifyOnOptionChange()
+    }
+
+    private fun observeGameContext() {
+        overlayViewModel.currentGameContext.observeForever {
+            if (!overlayViewModel.isGameContextActive()) {
+                onGameContextEnd()
+            }
+        }
     }
 
     companion object {

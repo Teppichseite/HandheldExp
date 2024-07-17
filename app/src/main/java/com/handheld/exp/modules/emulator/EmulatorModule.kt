@@ -10,29 +10,30 @@ import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.modules.Module
-import com.handheld.exp.utils.BasicShellRunner
+import com.handheld.exp.utils.CommonShellRunner
 
 
 class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
+    private val shellRunner = CommonShellRunner()
+
     private val overlayMenuHolder: View = overlayView.findViewById(R.id.overlayMenuHolder)
     private val gameContextHolder: View = overlayView.findViewById(R.id.gameContextHolder)
 
-    private val shellRunner = BasicShellRunner()
-
     private var isInKeySetup = false
+    private var oldMenuHolderPadding = Pair(0, 0)
 
     private val quickLoad = ButtonItem(
         label = "Quick Load", key = "quick_load", sortKey = "b"
     ) {
-        runInputCommandsOnEmulator(listOf("input text b"), "Loading...")
+        onQuickLoad()
     }
 
     private val quickSave = ButtonItem(
         label = "Quick Save", key = "quick_save", sortKey = "c"
     ) {
-        runInputCommandsOnEmulator(listOf("input text n"), "Saving...")
+        onQuickSave()
     }
 
     private val emulatorKeySetup = NavigationItem(
@@ -49,7 +50,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         path = listOf("other_settings", "emulator_key_setup"),
         disabled = true
     ) {
-        shellRunner.runCommand("input text b")
+        shellRunner.runCommand(QUICK_LOAD_CMD)
     }
 
     private val setQuickSave = ButtonItem(
@@ -59,34 +60,67 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         path = listOf("other_settings", "emulator_key_setup"),
         disabled = true
     ) {
-        shellRunner.runCommand("input text n")
+        shellRunner.runCommand(QUICK_SAVE_CMD)
     }
 
-    private var startKeySetup: ButtonItem? = null
-
-    private var oldMenuHolderPadding = Pair(0, 0)
+    private var toggleKeySetup = ButtonItem(
+        label = "Start Load/Save Setup",
+        key = "toggle_key_setup",
+        sortKey = "l1",
+        path = listOf("other_settings", "emulator_key_setup")
+    ) {
+        onToggleKeySetup()
+    }
 
     override fun onLoad() {
-
-        startKeySetup = ButtonItem(
-            label = "Start Load/Save Setup",
-            key = "start_key_setp",
-            sortKey = "l1",
-            path = listOf("other_settings", "emulator_key_setup")
-        ) {
-            if (!isInKeySetup) {
-                onStartKeySetup()
-            } else {
-                onEndKeySetup()
-            }
-        }
-
         overlayViewModel.menuItems.value?.add(quickLoad)
         overlayViewModel.menuItems.value?.add(quickSave)
         overlayViewModel.menuItems.value?.add(emulatorKeySetup)
-        overlayViewModel.menuItems.value?.add(startKeySetup!!)
+        overlayViewModel.menuItems.value?.add(toggleKeySetup)
         overlayViewModel.menuItems.value?.add(setQuickLoad)
         overlayViewModel.menuItems.value?.add(setQuickSave)
+    }
+
+    private fun onQuickLoad() {
+        runInputCommandsOnEmulator(listOf(QUICK_LOAD_CMD), "Loading...")
+    }
+
+    private fun onQuickSave() {
+        runInputCommandsOnEmulator(listOf(QUICK_SAVE_CMD), "Saving...")
+    }
+
+    private fun onToggleKeySetup() {
+        isInKeySetup = !isInKeySetup
+
+        if(isInKeySetup){
+            oldMenuHolderPadding = Pair(overlayMenuHolder.paddingLeft, overlayMenuHolder.paddingRight)
+        }
+
+        val newMenuHolderPadding = if(!isInKeySetup) oldMenuHolderPadding
+            else Pair((getDisplayWidth() * 0.6f).toInt(), 0)
+
+        overlayMenuHolder.setPadding(
+            newMenuHolderPadding.first,
+            overlayMenuHolder.paddingTop,
+            newMenuHolderPadding.second,
+            overlayMenuHolder.paddingBottom
+        )
+        overlayViewModel.overlayFocused.value = !isInKeySetup
+
+        setQuickLoad.disabled = !isInKeySetup
+        setQuickSave.disabled = !isInKeySetup
+
+        toggleKeySetup.label = if(!isInKeySetup) "Start Setup" else "Stop Setup"
+
+        overlayViewModel.currentGameContext.value = overlayViewModel.currentGameContext.value
+        gameContextHolder.visibility = if(!isInKeySetup) View.VISIBLE else View.GONE
+
+        overlayViewModel.notifyMenuItemsChanged()
+    }
+
+    private fun getDisplayWidth(): Int {
+        return Resources.getSystem()
+            .displayMetrics.widthPixels
     }
 
     private fun runInputCommandsOnEmulator(commands: List<String>, menuTitle: String) {
@@ -113,54 +147,9 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         )
     }
 
-    private fun onStartKeySetup() {
-        gameContextHolder.visibility = View.GONE
-
-        oldMenuHolderPadding = Pair(overlayMenuHolder.paddingLeft, overlayMenuHolder.paddingRight)
-
-        overlayMenuHolder.setPadding(
-            (getDisplayWidth() * 0.6f).toInt(),
-            overlayMenuHolder.paddingTop,
-            0,
-            overlayMenuHolder.paddingBottom
-        )
-        overlayViewModel.overlayFocused.value = false
-
-        setQuickLoad.disabled = false
-        setQuickSave.disabled = false
-
-        startKeySetup!!.label = "Stop Setup"
-
-        overlayViewModel.notifyMenuItemsChanged()
-
-        isInKeySetup = true
-    }
-
-    private fun onEndKeySetup() {
-        gameContextHolder.visibility = View.VISIBLE
-        overlayMenuHolder.setPadding(
-            oldMenuHolderPadding.first,
-            overlayMenuHolder.paddingTop,
-            oldMenuHolderPadding.second,
-            overlayMenuHolder.paddingBottom
-        )
-        overlayViewModel.overlayFocused.value = true
-
-        setQuickLoad.disabled = true
-        setQuickSave.disabled = true
-
-        startKeySetup!!.label = "Start Setup"
-
-        overlayViewModel.currentGameContext.value = overlayViewModel.currentGameContext.value
-
-        overlayViewModel.notifyMenuItemsChanged()
-
-        isInKeySetup = false
-    }
-
-    private fun getDisplayWidth(): Int {
-        return Resources.getSystem()
-            .displayMetrics.widthPixels
+    companion object {
+        private const val QUICK_LOAD_CMD = "input text b"
+        private const val QUICK_SAVE_CMD = "input text n"
     }
 
 }

@@ -1,4 +1,4 @@
-package com.handheld.exp.devices.rp4pro
+package com.handheld.exp.modules.devices.rp4pro
 
 import android.annotation.SuppressLint
 import android.os.IBinder
@@ -8,7 +8,7 @@ import java.nio.charset.Charset
 // From https://github.com/langerhans/OdinTools/blob/main/app/src/main/java/de/langerhans/odintools/tools/ShellExecutor.kt
 
 @SuppressLint("DiscouragedPrivateApi", "PrivateApi")
-class ShellExecutor{
+class Rp4ProShellRunner{
 
     private val binder: IBinder?
     var pServerAvailable: Boolean = false

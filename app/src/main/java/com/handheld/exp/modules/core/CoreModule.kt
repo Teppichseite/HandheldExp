@@ -3,6 +3,7 @@ package com.handheld.exp.modules.core
 import ItemAdapter
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,12 +13,14 @@ import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.modules.Module
+import com.handheld.exp.utils.CommonShellRunner
 
 class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
-    override fun onLoad() {
+    private val shellRunner = CommonShellRunner()
 
+    override fun onLoad() {
         createMenuItemUi()
 
         val closeItem =
@@ -41,6 +44,12 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         overlayViewModel.menuItems.value?.add(closeItem)
         overlayViewModel.menuItems.value?.add(otherSettings)
         overlayViewModel.menuItems.value?.add(exitItem)
+
+        overlayViewModel.currentGameContext.observeForever {
+            if (!overlayViewModel.isGameContextActive()) {
+                closeLatestApp()
+            }
+        }
     }
 
     private fun createMenuItemUi() {
@@ -85,5 +94,33 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         overlayViewModel.menuTitle.observeForever {
             menuTitle.text = overlayViewModel.menuTitle.value
         }
+    }
+
+    private fun closeLatestApp() {
+
+        val dimensions = Resources.getSystem().displayMetrics
+
+        val swipeFrom = Pair(dimensions.widthPixels / 2, dimensions.heightPixels / 2)
+
+        val swipeTo = Pair(swipeFrom.first, dimensions.heightPixels * 0.1)
+
+        val swipe = listOf(swipeFrom.first, swipeFrom.second, swipeTo.first, swipeTo.second)
+            .map { it.toInt() }
+            .joinToString(" ")
+
+        val closeTap = "${dimensions.widthPixels * 0.95} ${swipeFrom.second}"
+
+        val commands = listOf(
+            // Open latest open apps
+            "input keyevent KEYCODE_APP_SWITCH",
+            "sleep 0.5",
+            // Close app on the left side
+            "input touchscreen swipe $swipe 50",
+            "sleep 0.5",
+            // Go back to ES_DE
+            "input tap ${closeTap}"
+        )
+
+        shellRunner.runCommands(commands)
     }
 }
