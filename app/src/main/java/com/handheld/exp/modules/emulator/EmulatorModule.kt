@@ -9,6 +9,7 @@ import com.handheld.exp.OverlayViewModel
 import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.NavigationItem
+import com.handheld.exp.models.TextItem
 import com.handheld.exp.modules.Module
 import com.handheld.exp.utils.CommonShellRunner
 
@@ -72,6 +73,13 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         onToggleKeySetup()
     }
 
+    private var keySetupInfo = TextItem(
+        label = "This is some info",
+        key = "key_setup_info",
+        sortKey = "l10",
+        path = listOf("other_settings", "emulator_key_setup")
+    )
+
     override fun onLoad() {
         overlayViewModel.menuItems.value?.add(quickLoad)
         overlayViewModel.menuItems.value?.add(quickSave)
@@ -79,6 +87,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         overlayViewModel.menuItems.value?.add(toggleKeySetup)
         overlayViewModel.menuItems.value?.add(setQuickLoad)
         overlayViewModel.menuItems.value?.add(setQuickSave)
+        overlayViewModel.menuItems.value?.add(keySetupInfo)
     }
 
     private fun onQuickLoad() {

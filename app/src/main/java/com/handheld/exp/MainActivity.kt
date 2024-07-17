@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.main_activity_layout);
 
         if (requestDrawOverlayPermission()) {
-            startOverlayService();
+            //startOverlayService();
         }
 
         createUi()

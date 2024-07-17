@@ -20,36 +20,44 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
     private val shellRunner = CommonShellRunner()
 
+    private val closeItem = ButtonItem(
+        label = "Resume", key = "close", sortKey = "a"
+    ) {
+        overlayViewModel.closeOverlay()
+    }
+
+    private val exitItem = ButtonItem(
+        label = "Exit Game", key = "exit", sortKey = "z"
+    ) {
+        onExit()
+    }
+
+    private val otherSettings =
+        NavigationItem(label = "Other Settings", key = "other_settings", sortKey = "l")
+
     override fun onLoad() {
         createMenuItemUi()
-
-        val closeItem =
-            ButtonItem(label = "Resume", key = "close", sortKey = "a") {
-                overlayViewModel.closeOverlay()
-            }
-
-        val exitItem =
-            ButtonItem(label = "Exit Game", key = "exit", sortKey = "z") {
-                val startMain = Intent(Intent.ACTION_MAIN)
-                startMain.addCategory(Intent.CATEGORY_HOME)
-                startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-                overlayViewModel.closeOverlay()
-                context.startActivity(startMain)
-            }
-
-        val otherSettings =
-            NavigationItem(label = "Other Settings", key = "other_settings", sortKey = "l")
 
         overlayViewModel.menuItems.value?.add(closeItem)
         overlayViewModel.menuItems.value?.add(otherSettings)
         overlayViewModel.menuItems.value?.add(exitItem)
 
         overlayViewModel.currentGameContext.observeForever {
-            if (!overlayViewModel.isGameContextActive()) {
-                closeLatestApp()
+            if (overlayViewModel.isGameContextActive()) {
+                return@observeForever
             }
+
+            closeLatestApp()
         }
+    }
+
+    private fun onExit(){
+        val startMain = Intent(Intent.ACTION_MAIN)
+        startMain.addCategory(Intent.CATEGORY_HOME)
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+        overlayViewModel.closeOverlay()
+        context.startActivity(startMain)
     }
 
     private fun createMenuItemUi() {
@@ -85,10 +93,11 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
             adapter.setItems(overlayViewModel.getCurrentMenuItems())
             if (overlayViewModel.getCurrentNavigationItem() == null) {
                 overlayViewModel.menuTitle.value = "Play Menu"
-            } else {
-                overlayViewModel.menuTitle.value =
-                    overlayViewModel.getCurrentNavigationItem()?.label
+                return@observeForever
             }
+
+            overlayViewModel.menuTitle.value =
+                overlayViewModel.getCurrentNavigationItem()?.label
         }
 
         overlayViewModel.menuTitle.observeForever {

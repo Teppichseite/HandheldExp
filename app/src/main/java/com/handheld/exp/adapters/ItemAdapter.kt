@@ -1,19 +1,16 @@
 import android.annotation.SuppressLint
-import android.opengl.Visibility
-import android.util.SparseArray
 import android.view.KeyEvent
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.compose.runtime.traceEventEnd
 import androidx.recyclerview.widget.RecyclerView
 import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.Item
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.models.OptionItem
+import com.handheld.exp.models.TextItem
 
 class ItemAdapter(
     private var items: List<Item>,
@@ -24,6 +21,7 @@ class ItemAdapter(
         private const val VIEW_TYPE_OPTION = 0
         private const val VIEW_TYPE_BUTTON = 1
         private const val VIEW_TYPE_NAVIGATION = 2
+        private const val VIEW_TYPE_TEXT = 3
     }
 
     init {
@@ -31,35 +29,26 @@ class ItemAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.common_item_layout, parent, false)
+
         return when (viewType) {
-            VIEW_TYPE_OPTION -> {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.option_item_layout, parent, false)
-                OptionViewHolder(view)
-            }
-
-            VIEW_TYPE_BUTTON -> {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.option_item_layout, parent, false)
-                ButtonViewHolder(view)
-            }
-
-            VIEW_TYPE_NAVIGATION -> {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.option_item_layout, parent, false)
-                NavigationViewHolder(view)
-            }
-
+            VIEW_TYPE_OPTION -> OptionViewHolder(view)
+            VIEW_TYPE_BUTTON -> ButtonViewHolder(view)
+            VIEW_TYPE_NAVIGATION -> NavigationViewHolder(view)
+            VIEW_TYPE_TEXT -> TextViewHolder(view)
             else -> throw IllegalArgumentException("Invalid view type")
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = items[position]
+
         when (holder.itemViewType) {
             VIEW_TYPE_OPTION -> {
                 val optionHolder = holder as OptionViewHolder
-                optionHolder.bind(item as OptionItem, position)
+                optionHolder.bind(item as OptionItem)
             }
 
             VIEW_TYPE_BUTTON -> {
@@ -70,6 +59,11 @@ class ItemAdapter(
             VIEW_TYPE_NAVIGATION -> {
                 val navigationHolder = holder as NavigationViewHolder
                 navigationHolder.bind(item as NavigationItem)
+            }
+
+            VIEW_TYPE_TEXT -> {
+                val textHolder = holder as TextViewHolder
+                textHolder.bind(item as TextItem)
             }
         }
     }
@@ -83,6 +77,7 @@ class ItemAdapter(
             is OptionItem -> VIEW_TYPE_OPTION
             is ButtonItem -> VIEW_TYPE_BUTTON
             is NavigationItem -> VIEW_TYPE_NAVIGATION
+            is TextItem -> VIEW_TYPE_TEXT
             else -> throw IllegalArgumentException("Invalid item type")
         }
     }
@@ -96,17 +91,51 @@ class ItemAdapter(
         notifyDataSetChanged()
     }
 
-    inner class OptionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val labelTextView: TextView = itemView.findViewById(R.id.label)
-        private val valueTextView: TextView = itemView.findViewById(R.id.value)
-        private val arrowView: View = itemView.findViewById(R.id.arrow)
+    abstract inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(optionItem: OptionItem, position: Int) {
-            labelTextView.text = optionItem.label
+        protected val labelTextView: TextView = itemView.findViewById(R.id.label)
+        protected val selectorView: View = itemView.findViewById(R.id.selector)
+        protected val selectorTextView: TextView = itemView.findViewById(R.id.value)
+        protected val arrowView: View = itemView.findViewById(R.id.arrow)
+
+        init {
+            selectorView.visibility = View.GONE
             arrowView.visibility = View.GONE
-            valueTextView.text = optionItem.getOption().label
+        }
 
-            setDefaultListeners(itemView,
+        @SuppressLint("ClickableViewAccessibility")
+        protected fun setDefaultListeners(
+            onClick: () -> Unit,
+            onKeyDown: (keyCode: Int) -> Boolean
+        ) {
+            itemView.setOnClickListener {
+                onClick()
+            }
+
+            itemView.setOnKeyListener { _, keyCode, event ->
+                if (event?.action != KeyEvent.ACTION_DOWN) {
+                    return@setOnKeyListener false
+                }
+
+                when (keyCode) {
+                    KeyEvent.KEYCODE_BACK -> {
+                        navigationHandler.onNavigateBack()
+                        return@setOnKeyListener true
+                    }
+                }
+                return@setOnKeyListener onKeyDown(keyCode)
+            }
+        }
+    }
+
+    inner class OptionViewHolder(itemView: View) : ItemViewHolder(itemView) {
+
+        fun bind(optionItem: OptionItem) {
+            selectorView.visibility = View.VISIBLE
+            labelTextView.text = optionItem.label
+            selectorTextView.text = optionItem.getOption().label
+
+            setDefaultListeners(
                 onClick = {
                     optionItem.nextOption()
                     optionItem.notifyOnOptionChange()
@@ -137,59 +166,32 @@ class ItemAdapter(
         }
     }
 
-    inner class ButtonViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val labelTextView: TextView = itemView.findViewById(R.id.label)
-        private val selectorView: View = itemView.findViewById(R.id.selector)
-        private val arrowView: View = itemView.findViewById(R.id.arrow)
-
-        fun bind(optionItem: ButtonItem) {
-            labelTextView.text = optionItem.label
-            selectorView.visibility = View.GONE
-            arrowView.visibility = View.GONE
-
-            setDefaultListeners(itemView,
-                onClick = { optionItem.onClick() },
+    inner class ButtonViewHolder(itemView: View) : ItemViewHolder(itemView) {
+        fun bind(item: ButtonItem) {
+            labelTextView.text = item.label
+            setDefaultListeners(
+                onClick = { item.onClick() },
                 onKeyDown = { false }
             )
         }
     }
 
-    inner class NavigationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val labelTextView: TextView = itemView.findViewById(R.id.label)
-        private val selectorView: View = itemView.findViewById(R.id.selector)
+    inner class NavigationViewHolder(itemView: View) : ItemViewHolder(itemView) {
 
         fun bind(navigationItem: NavigationItem) {
             labelTextView.text = navigationItem.label
-            selectorView.visibility = View.GONE
+            arrowView.visibility = View.VISIBLE
 
-            setDefaultListeners(itemView,
+            setDefaultListeners(
                 onClick = { navigationHandler.onNavigateTo(navigationItem) },
                 onKeyDown = { false }
             )
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setDefaultListeners(
-        view: View,
-        onClick: () -> Unit,
-        onKeyDown: (keyCode: Int) -> Boolean
-    ) {
-        view.setOnClickListener {
-            onClick()
-        }
-
-        view.setOnKeyListener { _, keyCode, event ->
-            if (event?.action == KeyEvent.ACTION_DOWN) {
-                when (keyCode) {
-                    KeyEvent.KEYCODE_BACK -> {
-                        navigationHandler.onNavigateBack()
-                        return@setOnKeyListener true
-                    }
-                }
-                return@setOnKeyListener onKeyDown(keyCode)
-            }
-            false
+    inner class TextViewHolder(itemView: View) : ItemViewHolder(itemView) {
+        fun bind(textItem: TextItem) {
+            labelTextView.text = textItem.label
         }
     }
 

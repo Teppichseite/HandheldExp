@@ -75,8 +75,6 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/divider" />
+    <include layout="@layout/horizontal_divider_layout" />
+
 </LinearLayout>

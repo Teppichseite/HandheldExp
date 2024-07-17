@@ -66,7 +66,7 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
 
     override fun onLoad() {
 
-        refreshItems()
+        //refreshItems()
         //observeGameContext()
 
         overlayViewModel.menuItems.value!!.add(quickSettings)
@@ -134,9 +134,11 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
 
     private fun observeGameContext() {
         overlayViewModel.currentGameContext.observeForever {
-            if (!overlayViewModel.isGameContextActive()) {
-                onGameContextEnd()
+            if (overlayViewModel.isGameContextActive()) {
+                return@observeForever
             }
+
+            onGameContextEnd()
         }
     }
 

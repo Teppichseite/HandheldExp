@@ -129,19 +129,23 @@ class OverlayService : Service() {
         overlayViewModel.overlayOpened.observeForever(Observer {
             if (!it) {
                 overlayView?.visibility = View.GONE;
-            } else {
-                overlayView?.visibility = View.VISIBLE;
+                return@Observer
             }
+
+            overlayView?.visibility = View.VISIBLE;
         })
 
         overlayViewModel.overlayFocused.observeForever(Observer {
             if (!it) {
-                params!!.flags = LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS or LayoutParams.FLAG_NOT_FOCUSABLE
+                params!!.flags =
+                    LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS or LayoutParams.FLAG_NOT_FOCUSABLE
                 windowManager!!.updateViewLayout(overlayView, params)
-            } else {
-                params!!.flags = LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS
-                windowManager!!.updateViewLayout(overlayView, params)
+                return@Observer
             }
+
+            params!!.flags =
+                LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            windowManager!!.updateViewLayout(overlayView, params)
         })
     }
 

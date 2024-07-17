@@ -1,12 +1,9 @@
 package com.handheld.exp
 
 import androidx.lifecycle.MutableLiveData
-import com.handheld.exp.models.Game
 import com.handheld.exp.models.GameContext
-import com.handheld.exp.models.GameMedia
 import com.handheld.exp.models.Item
 import com.handheld.exp.models.NavigationItem
-import com.handheld.exp.models.System
 
 class OverlayViewModel {
     val overlayOpened = MutableLiveData<Boolean>()
@@ -81,56 +78,9 @@ class OverlayViewModel {
     }
 
     fun startGameContext(
-        esDeFolderPath: String?,
-        gameName: String,
-        gamePath: String,
-        systemName: String,
-        systemFullName: String
+        gameContext: GameContext
     ) {
-
-        val game = Game(
-            name = gameName
-        )
-
-        val gameMedia = GameMedia(
-            mixImagePath = getImagePath(
-                esDeFolderPath, gamePath, systemName, "miximages"
-            ),
-            coverPath = getImagePath(
-                esDeFolderPath, gamePath, systemName, "covers"
-            ),
-            manualPath = getImagePath(
-                esDeFolderPath, gamePath, systemName, "manuals"
-            )
-        )
-
-        val system = System(
-            name = systemName, fullName = systemFullName
-        )
-
-        currentGameContext.value = GameContext(
-            game, system, gameMedia
-        )
-    }
-
-    private fun getImagePath(
-        esDeFolderPath: String?,
-        gamePath: String,
-        systemName: String,
-        imageType: String
-    ): String {
-        val gameName = gamePath.split("/")
-            .last()
-            .split(".")
-            .first()
-            .replace("\\", "")
-
-        val extension = if (imageType == "manuals") "pdf" else "png"
-
-        val imagePath =
-            "$esDeFolderPath/downloaded_media/$systemName/$imageType/$gameName.$extension"
-
-        return imagePath
+        currentGameContext.value = gameContext
     }
 
     fun endGameContext() {

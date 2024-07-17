@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import android.net.Uri
 import android.os.Environment
 import com.handheld.exp.OverlayViewModel
+import com.handheld.exp.utils.GameContextResolver
 import com.handheld.exp.utils.PreferenceUtils
 
 class DataReceiver(
@@ -54,15 +55,16 @@ class DataReceiver(
         val command = intent.getStringExtra(COMMAND_EXTRA)
 
         if(command == "start"){
-            val esDeFolderUri = preferenceUtils.getPreference("es_de_folder_uri")
             val gameName = intent.getStringExtra("game_name")!!
             val gamePath = intent.getStringExtra("game_path")!!
             val systemName = intent.getStringExtra("system_name")!!
             val systemFullName = intent.getStringExtra("system_full_name")!!
 
-            val esDeFolderPath = "${Environment.getExternalStorageDirectory()}/${Uri.parse(esDeFolderUri).path!!.split(":").last()}"
+            val gameContextResolver = GameContextResolver(context)
 
-            overlayViewModel.startGameContext(esDeFolderPath, gameName, gamePath, systemName, systemFullName)
+            val gameContext = gameContextResolver.resolve(gameName, gamePath, systemName, systemFullName)
+
+            overlayViewModel.startGameContext(gameContext)
             return
         }
 
