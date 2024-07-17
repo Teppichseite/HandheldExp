@@ -1,6 +1,9 @@
 package com.handheld.exp.models
 
 abstract class Item(
-    val label: String,
-    val key: String
+    var label: String,
+    val key: String,
+    val path: List<String> = listOf(),
+    var sortKey: String = "",
+    var disabled: Boolean = false
 )

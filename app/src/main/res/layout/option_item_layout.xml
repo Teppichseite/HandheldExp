@@ -55,8 +55,21 @@
                 android:layout_width="16dip"
                 android:layout_height="16dip"
                 android:src="@drawable/option_arrow" />
-            
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/arrow"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:tint="@color/text"
+                android:layout_width="16dip"
+                android:layout_height="16dip"
+                android:src="@drawable/arrow" />
 
         </LinearLayout>
 

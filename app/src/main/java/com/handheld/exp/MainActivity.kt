@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
         createUi()
     }
 
-    private fun createUi(){
+    private fun createUi() {
         esDeFolderButton = findViewById(R.id.es_de_folder_button)
         esDeFolderLabel = findViewById(R.id.es_de_folder_label)
         esDeFolderButton!!.setOnClickListener {
@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
 
     private fun requestDrawOverlayPermission(): Boolean {
 
-        if(Settings.canDrawOverlays(this)){
+        if (Settings.canDrawOverlays(this)) {
             return true;
         }
 
@@ -69,13 +69,13 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        if(requestCode == REQUEST_FOLDER_PERMISSION_CODE && resultCode == RESULT_OK){
+        if (requestCode == REQUEST_FOLDER_PERMISSION_CODE && resultCode == RESULT_OK) {
             handleFolderPermissionGrant(data)
             return
         }
     }
 
-    private fun handleOverlayPermissionGrant(){
+    private fun handleOverlayPermissionGrant() {
         if (!Settings.canDrawOverlays(this)) {
             return
         }
@@ -83,7 +83,7 @@ class MainActivity : ComponentActivity() {
         startOverlayService()
     }
 
-    private fun handleFolderPermissionGrant(data: Intent?){
+    private fun handleFolderPermissionGrant(data: Intent?) {
         if (data == null) {
             return
         }
@@ -99,12 +99,12 @@ class MainActivity : ComponentActivity() {
         populateEsDeFolderLabel()
     }
 
-    private fun populateEsDeFolderLabel(){
+    private fun populateEsDeFolderLabel() {
         val folderUri = preferenceUtils.getPreference("es_de_folder_uri")
 
-        if(folderUri == null){
+        if (folderUri == null) {
             this.esDeFolderLabel!!.setText("ES-DE Path: Not set")
-        }else{
+        } else {
             this.esDeFolderLabel!!.setText("ES-DE Path: $folderUri")
         }
     }

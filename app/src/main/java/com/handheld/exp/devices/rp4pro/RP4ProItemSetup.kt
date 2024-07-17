@@ -1,5 +1,6 @@
 package com.handheld.exp.devices.rp4pro
 
+/*
 import android.content.Context
 import com.handheld.exp.OverlayViewModel
 import com.handheld.exp.items.ItemSetup
@@ -11,7 +12,7 @@ class RP4ProItemSetup(
     context: Context,
     overlayViewModel: OverlayViewModel) : ItemSetup(context, overlayViewModel) {
 
-    private val performanceModeOptions = listOf(
+    /*private val performanceModeOptions = listOf(
         Option("Standard", PERFORMANCE_MODE_STANDARD),
         Option("Performance", PERFORMANCE_MODE_PERFORMANCE),
         Option("High Performance", PERFORMANCE_MODE_HIGH_PERFORMANCE)
@@ -51,10 +52,10 @@ class RP4ProItemSetup(
         onl2r2OptionChange(it)
     }
 
-    private val shellExecutor = ShellExecutor()
+    private val shellExecutor = ShellExecutor()*/
 
     override fun setupItems() {
-        val items: List<Item> = listOf(
+        /*val items: MutableList<Item> = mutableListOf(
             performanceModeItem,
             fanModeItem,
             l2r2ModeItem
@@ -64,10 +65,11 @@ class RP4ProItemSetup(
 
         observeGameContext()
 
-        overlayViewModel.menuItems.value = overlayViewModel.menuItems.value!! + items
+        overlayViewModel.menuItems.value!!.addAll(items)
+        overlayViewModel.notifyMenuItemsChanged()*/
     }
 
-    private fun refreshItems(){
+    /*private fun refreshItems(){
         performanceModeItem.setOption(
             getDeviceSetting(PERFORMANCE_MODE)
         )
@@ -164,6 +166,8 @@ class RP4ProItemSetup(
         private const val L2R2_MODE_ANALOG = "0"
         private const val L2R2_MODE_DIGITAL = "1"
         private const val L2R2_MODE_BOTH = "2"
-    }
+    }*/
 
 }
+
+*/

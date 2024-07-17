@@ -7,4 +7,6 @@
     <color name="focus">#000000</color>
     <color name="divider">#303030</color>
     <color name="button">#000000</color>
+    <color name="transparent">#00000000</color>
+
 </resources>
