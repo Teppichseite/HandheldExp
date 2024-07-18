@@ -1,6 +1,7 @@
 package com.handheld.exp
 
 import android.app.AlarmManager
+import android.app.AppOpsManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -26,8 +27,10 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.main_activity_layout);
 
         if (requestDrawOverlayPermission()) {
-            //startOverlayService();
+            startOverlayService();
         }
+
+        requestUsageStatsPermission()
 
         createUi()
     }
@@ -54,6 +57,21 @@ class MainActivity : ComponentActivity() {
         )
         startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION_CODE)
         return false
+    }
+
+    private fun requestUsageStatsPermission() {
+        val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+        val mode = appOpsManager.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            android.os.Process.myUid(), packageName
+        )
+
+        val hasPermission = mode == AppOpsManager.MODE_ALLOWED
+        if(mode == AppOpsManager.MODE_ALLOWED){
+            return
+        }
+
+        startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
     }
 
     fun requestEsDeFolderPathAndPermission() {

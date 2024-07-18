@@ -1,11 +1,13 @@
 package com.handheld.exp
 
 import androidx.lifecycle.MutableLiveData
+import com.handheld.exp.models.AppContext
 import com.handheld.exp.models.GameContext
 import com.handheld.exp.models.Item
 import com.handheld.exp.models.NavigationItem
 
 class OverlayViewModel {
+
     val overlayOpened = MutableLiveData<Boolean>()
     val overlayFocused = MutableLiveData<Boolean>()
 
@@ -16,6 +18,8 @@ class OverlayViewModel {
     val menuItems = MutableLiveData<MutableList<Item>>()
     val pathHistory = MutableLiveData<ArrayDeque<List<NavigationItem>>>()
     val focusedItem = MutableLiveData<Item?>()
+
+    val currentAppContext = MutableLiveData<AppContext?>()
 
     init {
         menuItems.value = mutableListOf()
@@ -93,6 +97,10 @@ class OverlayViewModel {
 
     fun notifyMenuItemsChanged() {
         menuItems.value = menuItems.value
+    }
+
+    fun startAppContext(appContext: AppContext?){
+        currentAppContext.value = appContext
     }
 
 }

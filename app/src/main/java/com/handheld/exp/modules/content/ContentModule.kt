@@ -79,7 +79,7 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
             } else if (coverImage != null) {
                 gameContextImage.setImageURI(Uri.fromFile(File(coverImage)))
             } else {
-                // TOOO: Set proper fallback image
+                // TODO: Set proper fallback image
                 val drawable = ResourcesCompat.getDrawable(
                     context.resources,
                     R.drawable.ic_launcher_background,

@@ -37,12 +37,21 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         onQuickSave()
     }
 
+    private var keySetupInfo = TextItem(
+        label = "This is some info",
+        key = "key_setup_info",
+        sortKey = "a",
+        path = listOf("other_settings", "emulator_key_setup"),
+        disabled = true
+    )
+
     private val emulatorKeySetup = NavigationItem(
         label = "Load/Save Setup",
         key = "emulator_key_setup",
         path = listOf("other_settings"),
         sortKey = "l0"
     )
+
 
     private val setQuickLoad = ButtonItem(
         label = "Set Quick Load",
@@ -72,13 +81,6 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
     ) {
         onToggleKeySetup()
     }
-
-    private var keySetupInfo = TextItem(
-        label = "This is some info",
-        key = "key_setup_info",
-        sortKey = "l10",
-        path = listOf("other_settings", "emulator_key_setup")
-    )
 
     override fun onLoad() {
         overlayViewModel.menuItems.value?.add(quickLoad)
@@ -115,6 +117,9 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
             overlayMenuHolder.paddingBottom
         )
         overlayViewModel.overlayFocused.value = !isInKeySetup
+
+        keySetupInfo.disabled = !isInKeySetup
+        keySetupInfo.label = "Setting for ${overlayViewModel.currentAppContext.value!!.name}"
 
         setQuickLoad.disabled = !isInKeySetup
         setQuickSave.disabled = !isInKeySetup

@@ -13,12 +13,14 @@ import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.modules.Module
+import com.handheld.exp.utils.AppContextResolver
 import com.handheld.exp.utils.CommonShellRunner
 
 class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
     private val shellRunner = CommonShellRunner()
+    private val appContextResolver = AppContextResolver(context)
 
     private val closeItem = ButtonItem(
         label = "Resume", key = "close", sortKey = "a"
@@ -49,6 +51,8 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
             closeLatestApp()
         }
+
+        handleAppResolving()
     }
 
     private fun onExit(){
@@ -131,5 +135,14 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         )
 
         shellRunner.runCommands(commands)
+    }
+
+    private fun handleAppResolving(){
+        overlayViewModel.currentGameContext.observeForever{
+            overlayViewModel.startAppContext(appContextResolver.resolve())
+        }
+        overlayViewModel.overlayOpened.observeForever{
+            overlayViewModel.startAppContext(appContextResolver.resolve())
+        }
     }
 }
