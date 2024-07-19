@@ -1,8 +1,10 @@
 package com.handheld.exp
 
+import ItemAdapter
 import android.app.AlarmManager
 import android.app.AppOpsManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -13,6 +15,11 @@ import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.handheld.exp.models.ButtonItem
+import com.handheld.exp.models.Item
+import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.utils.PreferenceUtils
 
 class MainActivity : ComponentActivity() {
@@ -22,35 +29,83 @@ class MainActivity : ComponentActivity() {
 
     private val preferenceUtils = PreferenceUtils(this)
 
+    private val setEsDePathItem = ButtonItem(
+        label = "Set ES-DE Location",
+        key = "set_es_de_location",
+        sortKey = "a"
+    ) {
+        requestEsDeFolderPathAndPermission()
+    }
+
+    private val setEsDeMediaPathItem = ButtonItem(
+        label = "Set ES-DE Media Location",
+        key = "set_es_de_media_location",
+        sortKey = "b"
+    ) {
+        requestEsDeMediaFolderPathAndPermission()
+    }
+
+    private val grantOverlayPermissionItem = ButtonItem(
+        label = "Grant Overlay Permission",
+        key = "grant_overlay_permission",
+        sortKey = "c"
+    ) {
+        requestDrawOverlayPermission()
+    }
+
+    private val grantUsageStatsPermissionItem = ButtonItem(
+        label = "Grant Usage Stats Permission",
+        key = "grant_usage_stats_permission",
+        sortKey = "d"
+    ) {
+        requestUsageStatsPermission()
+    }
+
+    private val openOverlayItem = ButtonItem(
+        label = "Open Overlay Menu",
+        key = "open_overlay",
+        sortKey = "e"
+    ) {
+        onOpenOverlayMenu()
+    }
+
+    private val menuItems = listOf<Item>(
+        setEsDePathItem,
+        setEsDeMediaPathItem,
+        grantOverlayPermissionItem,
+        grantUsageStatsPermissionItem,
+        openOverlayItem
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity_layout);
-
-        if (requestDrawOverlayPermission()) {
-            startOverlayService();
-        }
-
-        requestUsageStatsPermission()
-
         createUi()
     }
 
     private fun createUi() {
-        esDeFolderButton = findViewById(R.id.es_de_folder_button)
-        esDeFolderLabel = findViewById(R.id.es_de_folder_label)
-        esDeFolderButton!!.setOnClickListener {
-            requestEsDeFolderPathAndPermission()
+        val recyclerView: RecyclerView = findViewById(R.id.mainActivityItemList)
+
+        val navigationHandler = object : ItemAdapter.NavigationHandler {
+            override fun onNavigateTo(navigationItem: NavigationItem) {
+            }
+
+            override fun onNavigateBack() {
+            }
         }
 
-        populateEsDeFolderLabel()
+        val adapter = ItemAdapter(
+            menuItems, navigationHandler
+        )
+        adapter.setHasStableIds(true)
+
+        recyclerView.adapter = adapter
+        recyclerView.itemAnimator = null
+
+        recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
     private fun requestDrawOverlayPermission(): Boolean {
-
-        if (Settings.canDrawOverlays(this)) {
-            return true;
-        }
-
         val intent = Intent(
             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
             Uri.parse("package:$packageName")
@@ -66,29 +121,29 @@ class MainActivity : ComponentActivity() {
             android.os.Process.myUid(), packageName
         )
 
-        val hasPermission = mode == AppOpsManager.MODE_ALLOWED
-        if(mode == AppOpsManager.MODE_ALLOWED){
-            return
-        }
-
         startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
     }
 
-    fun requestEsDeFolderPathAndPermission() {
+    private fun requestEsDeFolderPathAndPermission() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        startActivityForResult(intent, REQUEST_FOLDER_PERMISSION_CODE)
+        startActivityForResult(intent, REQUEST_ES_DE_FOLDER_PERMISSION_CODE)
+    }
+
+    private fun requestEsDeMediaFolderPathAndPermission() {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        startActivityForResult(intent, REQUEST_ES_DE_MEDIA_FOLDER_PERMISSION_CODE)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_OVERLAY_PERMISSION_CODE && resultCode == RESULT_OK) {
-            handleOverlayPermissionGrant()
+        if (requestCode == REQUEST_ES_DE_FOLDER_PERMISSION_CODE && resultCode == RESULT_OK) {
+            handleFolderPermissionGrant(data, "es_de_folder_uri")
             return
         }
 
-        if (requestCode == REQUEST_FOLDER_PERMISSION_CODE && resultCode == RESULT_OK) {
-            handleFolderPermissionGrant(data)
+        if (requestCode == REQUEST_ES_DE_MEDIA_FOLDER_PERMISSION_CODE && resultCode == RESULT_OK) {
+            handleFolderPermissionGrant(data, "es_de_media_folder_uri")
             return
         }
     }
@@ -101,7 +156,7 @@ class MainActivity : ComponentActivity() {
         startOverlayService()
     }
 
-    private fun handleFolderPermissionGrant(data: Intent?) {
+    private fun handleFolderPermissionGrant(data: Intent?, storageKey: String) {
         if (data == null) {
             return
         }
@@ -113,8 +168,7 @@ class MainActivity : ComponentActivity() {
 
         contentResolver.takePersistableUriPermission(uri, takeFlags)
 
-        preferenceUtils.setPreference("es_de_folder_uri", uri.toString())
-        populateEsDeFolderLabel()
+        preferenceUtils.setPreference(storageKey, uri.toString())
     }
 
     private fun populateEsDeFolderLabel() {
@@ -136,8 +190,22 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun onOpenOverlayMenu() {
+        val startOverlayServiceIntent = Intent("com.handheld.exp.OVERLAY_SERVICE")
+        startOverlayServiceIntent.component = ComponentName(
+            "com.handheld.exp",
+            "com.handheld.exp.receivers.OverlayServiceReceiver"
+        )
+        sendBroadcast(startOverlayServiceIntent)
+
+        val openMenuIntent = Intent("com.handheld.exp.OVERLAY")
+        openMenuIntent.putExtra("command", "open")
+        sendBroadcast(openMenuIntent)
+    }
+
     companion object {
         private const val REQUEST_OVERLAY_PERMISSION_CODE = 0
-        private const val REQUEST_FOLDER_PERMISSION_CODE = 1
+        private const val REQUEST_ES_DE_FOLDER_PERMISSION_CODE = 1
+        private const val REQUEST_ES_DE_MEDIA_FOLDER_PERMISSION_CODE = 2
     }
 }

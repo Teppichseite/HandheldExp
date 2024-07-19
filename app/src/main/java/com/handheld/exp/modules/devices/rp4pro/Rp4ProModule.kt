@@ -3,6 +3,7 @@ package com.handheld.exp.modules.devices.rp4pro
 import android.content.Context
 import android.view.View
 import com.handheld.exp.OverlayViewModel
+import com.handheld.exp.R
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.models.Option
 import com.handheld.exp.models.OptionItem
@@ -13,7 +14,11 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
 
     private val shellExecutor = Rp4ProShellRunner()
 
-    private val quickSettings = NavigationItem("Quick Settings", "quick_settings", sortKey = "k0")
+    private val quickSettings = NavigationItem(
+        "Quick Settings",
+        "quick_settings",
+        sortKey = "k0"
+    )
 
     private val performanceModeOptions = listOf(
         Option("Standard", PERFORMANCE_MODE_STANDARD),

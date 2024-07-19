@@ -1,36 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/frame"
-    android:padding="20dip"
-    >
-
-    <Button
-        android:id="@+id/es_de_folder_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Select ES-DE Folder"
-        android:fontFamily="@font/akrobat_regular"
-        android:textAllCaps="true"
-        android:focusable="true"
-        android:textStyle="bold"
-        android:textColor="@color/text"
-        android:textSize="22dip"
-        android:background="@color/button"
-        />
+    android:orientation="vertical">
 
     <TextView
-        android:id="@+id/es_de_folder_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/akrobat_regular"
-        android:text="ES-DE Location: /abc/ES-DE/"
+        android:padding="10dip"
+        android:text="HandheldExp Setup"
         android:textAllCaps="true"
         android:textColor="@color/text"
-        android:textSize="22dip"
+        android:textSize="25dip"
         android:textStyle="bold" />
+
+    <include layout="@layout/horizontal_divider_layout" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mainActivityItemList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </LinearLayout>

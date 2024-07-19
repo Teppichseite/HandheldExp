@@ -1,6 +1,5 @@
 package com.handheld.exp.utils
 
-import android.app.usage.UsageEvents
 import android.app.usage.UsageEvents.Event
 import android.app.usage.UsageEvents.Event.ACTIVITY_RESUMED
 import android.app.usage.UsageStatsManager
@@ -20,7 +19,7 @@ class AppContextResolver(private val context: Context) {
 
         val events: MutableList<Event> = mutableListOf()
         while (stats.hasNextEvent()){
-            val event = UsageEvents.Event()
+            val event = Event()
             stats.getNextEvent(event)
             events.add(event)
         }

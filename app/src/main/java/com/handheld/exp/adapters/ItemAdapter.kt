@@ -3,6 +3,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.handheld.exp.R
@@ -97,10 +98,22 @@ class ItemAdapter(
         protected val selectorView: View = itemView.findViewById(R.id.selector)
         protected val selectorTextView: TextView = itemView.findViewById(R.id.value)
         protected val arrowView: View = itemView.findViewById(R.id.arrow)
+        protected val iconView: ImageView = itemView.findViewById(R.id.icon)
 
         init {
             selectorView.visibility = View.GONE
             arrowView.visibility = View.GONE
+        }
+
+        protected fun bind(item: Item){
+            if(item.icon > -1){
+                iconView.setImageResource(item.icon);
+                iconView.visibility = View.VISIBLE
+                iconView.visibility = View.GONE
+            }else{
+                iconView.setImageDrawable(null)
+                iconView.visibility = View.GONE
+            }
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -131,6 +144,7 @@ class ItemAdapter(
     inner class OptionViewHolder(itemView: View) : ItemViewHolder(itemView) {
 
         fun bind(optionItem: OptionItem) {
+            super.bind(optionItem)
             selectorView.visibility = View.VISIBLE
             labelTextView.text = optionItem.label
             selectorTextView.text = optionItem.getOption().label
@@ -168,6 +182,7 @@ class ItemAdapter(
 
     inner class ButtonViewHolder(itemView: View) : ItemViewHolder(itemView) {
         fun bind(item: ButtonItem) {
+            super.bind(item)
             labelTextView.text = item.label
             setDefaultListeners(
                 onClick = { item.onClick() },
@@ -179,6 +194,7 @@ class ItemAdapter(
     inner class NavigationViewHolder(itemView: View) : ItemViewHolder(itemView) {
 
         fun bind(navigationItem: NavigationItem) {
+            super.bind(navigationItem)
             labelTextView.text = navigationItem.label
             arrowView.visibility = View.VISIBLE
 
@@ -191,6 +207,7 @@ class ItemAdapter(
 
     inner class TextViewHolder(itemView: View) : ItemViewHolder(itemView) {
         fun bind(textItem: TextItem) {
+            super.bind(textItem)
             labelTextView.text = textItem.label
         }
     }

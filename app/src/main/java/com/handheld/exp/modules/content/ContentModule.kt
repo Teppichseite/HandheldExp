@@ -17,7 +17,11 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
 
     private val pdfViewer = PdfViewer(overlayView)
 
-    val showManual = ButtonItem(label = "Show Manual", key = "show_manual", sortKey = "d") {
+    val showManual = ButtonItem(
+        label = "Show Manual",
+        key = "show_manual",
+        sortKey = "d",
+    ) {
         onShowManual()
     }
 
@@ -27,7 +31,7 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
         overlayViewModel.menuItems.value?.add(showManual)
 
         overlayViewModel.overlayOpened.observeForever {
-            if(!it || !pdfViewer.isOpened()){
+            if (!it || !pdfViewer.isOpened()) {
                 return@observeForever
             }
 

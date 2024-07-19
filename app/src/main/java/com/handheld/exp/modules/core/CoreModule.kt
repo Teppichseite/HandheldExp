@@ -23,19 +23,23 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
     private val appContextResolver = AppContextResolver(context)
 
     private val closeItem = ButtonItem(
-        label = "Resume", key = "close", sortKey = "a"
+        label = "Resume", key = "close", sortKey = "a",
     ) {
         overlayViewModel.closeOverlay()
     }
 
     private val exitItem = ButtonItem(
-        label = "Exit Game", key = "exit", sortKey = "z"
+        label = "Exit Game", key = "exit", sortKey = "z",
     ) {
         onExit()
     }
 
     private val otherSettings =
-        NavigationItem(label = "Other Settings", key = "other_settings", sortKey = "l")
+        NavigationItem(
+            label = "Other Settings",
+            key = "other_settings",
+            sortKey = "l"
+        )
 
     override fun onLoad() {
         createMenuItemUi()
@@ -55,7 +59,7 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         handleAppResolving()
     }
 
-    private fun onExit(){
+    private fun onExit() {
         val startMain = Intent(Intent.ACTION_MAIN)
         startMain.addCategory(Intent.CATEGORY_HOME)
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -121,7 +125,7 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
             .map { it.toInt() }
             .joinToString(" ")
 
-        val closeTap = "${dimensions.widthPixels * 0.95} ${swipeFrom.second}"
+        val closeTap = "${(dimensions.widthPixels * 0.95).toInt()} ${swipeFrom.second}"
 
         val commands = listOf(
             // Open latest open apps
@@ -137,11 +141,11 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         shellRunner.runCommands(commands)
     }
 
-    private fun handleAppResolving(){
-        overlayViewModel.currentGameContext.observeForever{
+    private fun handleAppResolving() {
+        overlayViewModel.currentGameContext.observeForever {
             overlayViewModel.startAppContext(appContextResolver.resolve())
         }
-        overlayViewModel.overlayOpened.observeForever{
+        overlayViewModel.overlayOpened.observeForever {
             overlayViewModel.startAppContext(appContextResolver.resolve())
         }
     }

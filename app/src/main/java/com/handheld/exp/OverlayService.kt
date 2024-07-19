@@ -138,7 +138,7 @@ class OverlayService : Service() {
         overlayViewModel.overlayFocused.observeForever(Observer {
             if (!it) {
                 params!!.flags =
-                    LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS or LayoutParams.FLAG_NOT_FOCUSABLE
+                    LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS or LayoutParams.FLAG_NOT_FOCUSABLE or LayoutParams.FLAG_NOT_TOUCHABLE
                 windowManager!!.updateViewLayout(overlayView, params)
                 return@Observer
             }

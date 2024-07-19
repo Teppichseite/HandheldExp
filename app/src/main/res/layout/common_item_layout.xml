@@ -11,7 +11,21 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
+        android:gravity="center"
+        android:padding="2dip"
+        android:paddingStart="4dip"
+        android:paddingEnd="2dip"
         android:layout_height="wrap_content">
+        
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="22dip"
+            android:layout_height="22dip"
+            android:src="@drawable/arrow"
+            android:tint="@color/text"
+            >
+
+        </ImageView>
 
         <TextView
             android:id="@+id/label"
@@ -23,7 +37,7 @@
             android:textAllCaps="true"
             android:layout_weight="1"
             android:fontFamily="@font/akrobat_semibold"
-            android:padding="2dp"/>
+            />
 
         <LinearLayout
             android:id="@+id/selector"

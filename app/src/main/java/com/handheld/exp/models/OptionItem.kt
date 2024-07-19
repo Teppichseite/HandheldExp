@@ -3,12 +3,13 @@ package com.handheld.exp.models
 class OptionItem(
     label: String,
     key: String,
+    icon: Int = -1,
     path: List<String> = listOf(),
     sortKey: String = "",
     disabled: Boolean = false,
     var options: List<Option>,
     var onOptionChange: (option: Option) -> Unit
-) : Item(label, key, path, sortKey, disabled) {
+) : Item(label, key, icon, path, sortKey, disabled) {
 
     private var selectedOptionIndex = 0
 
