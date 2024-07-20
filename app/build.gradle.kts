@@ -68,5 +68,4 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("com.github.barteksc:android-pdf-viewer:2.8.2")
-    implementation("com.google.mlkit:text-recognition:16.0.0")
 }
