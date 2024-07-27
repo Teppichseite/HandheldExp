@@ -6,6 +6,9 @@ import rikka.shizuku.ShizukuRemoteProcess
 
 class ShizukuUtils {
     companion object{
+
+        private const val REQUEST_SHIZUKU_PERMISSION_CODE = 0
+
         fun runCommands(vararg commands: String): String {
 
             // TODO: This might not work in the future anymore
@@ -34,12 +37,16 @@ class ShizukuUtils {
             return Shizuku.pingBinder()
         }
 
-        fun hasPermission(): Boolean{
+        private fun hasPermission(): Boolean{
             if (!isCorrectVersion()){
                 return false
             }
 
             return Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+        }
+
+        fun requestPermission(){
+            Shizuku.requestPermission(REQUEST_SHIZUKU_PERMISSION_CODE)
         }
 
         private fun isCorrectVersion(): Boolean{

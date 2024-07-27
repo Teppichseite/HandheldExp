@@ -126,7 +126,9 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
 
         toggleKeySetup.label = if (!isInKeySetup) "Start Setup" else "Stop Setup"
 
-        overlayViewModel.currentGameContext.value = overlayViewModel.currentGameContext.value
+        if(overlayViewModel.isGameContextActive()){
+            overlayViewModel.currentGameContext.value = overlayViewModel.currentGameContext.value
+        }
         gameContextHolder.visibility = if (!isInKeySetup) View.VISIBLE else View.GONE
 
         overlayViewModel.notifyMenuItemsChanged()

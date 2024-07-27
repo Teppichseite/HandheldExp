@@ -1,21 +1,14 @@
 package com.handheld.exp.modules.devices.rp4pro
 
-import android.Manifest
-import android.content.ContentProvider
 import android.content.Context
-import android.content.pm.PackageManager
 import android.provider.Settings
 import android.view.View
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.handheld.exp.OverlayViewModel
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.models.Option
 import com.handheld.exp.models.OptionItem
 import com.handheld.exp.modules.Module
-import com.handheld.exp.utils.CommonShellRunner
 import com.handheld.exp.utils.ShizukuUtils
-import com.shockwave.pdfium.BuildConfig
 
 class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
@@ -125,7 +118,8 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
     }
 
     private fun getDeviceSetting(settingKey: String): String {
-        return Settings.System.getInt(context.contentResolver, settingKey).toString()
+        return Settings.System.getInt(context.contentResolver, settingKey)
+            .toString()
     }
 
     private fun setDeviceSetting(settingKey: String, value: String) {
@@ -170,8 +164,18 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         private const val L2R2_MODE_DIGITAL = "1"
         private const val L2R2_MODE_BOTH = "2"
 
-        fun canLoad(context: Context): Boolean{
-            return ShizukuUtils.isAvailable()
+        private const val KEY_VENDOR_NAME_PROP = "ro.vendor.retro.name"
+
+        private val ALLOWED_VENDOR_NAMES = arrayOf("Q9", "4.0P")
+
+        fun canLoad(): Boolean {
+            if (!ShizukuUtils.isAvailable()) {
+                return false
+            }
+
+            val vendorName = ShizukuUtils.runCommands("getprop $KEY_VENDOR_NAME_PROP")
+
+            return ALLOWED_VENDOR_NAMES.contains(vendorName)
         }
     }
 

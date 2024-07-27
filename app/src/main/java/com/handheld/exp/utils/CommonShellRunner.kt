@@ -17,15 +17,15 @@ class CommonShellRunner {
             val stdOutStream = BufferedReader(InputStreamReader(process.inputStream))
             val stdErrStream = BufferedReader(InputStreamReader(process.inputStream))
 
-            val stdOut = stdOutStream.readText()
-            val stdErr = stdErrStream.readText()
+            val stdOut = stdOutStream.readText().trim()
+            val stdErr = stdErrStream.readText().trim()
 
             stdOutStream.close()
             stdErrStream.close()
 
             process.waitFor()
 
-            return "$stdOut\n$stdErr"
+            return "$stdOut$stdErr"
         }
     }
 }

@@ -24,7 +24,7 @@ class ModuleLoader(
         loadModule { EmulatorModule(context, viewModel, overlayView) }
 
         loadModule {
-            if(!Rp4ProModule.canLoad(context)){
+            if(!Rp4ProModule.canLoad()){
                 return@loadModule null
             }
             return@loadModule Rp4ProModule(context, viewModel, overlayView)

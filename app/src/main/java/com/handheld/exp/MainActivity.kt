@@ -5,7 +5,6 @@ import android.app.AppOpsManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -20,9 +19,8 @@ import com.handheld.exp.receivers.OverlayServiceReceiver
 import com.handheld.exp.utils.HandlerUtils
 import com.handheld.exp.utils.PreferenceUtils
 import com.handheld.exp.utils.ShizukuUtils
-import rikka.shizuku.Shizuku
 
-class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListener {
+class MainActivity : ComponentActivity() {
 
     private val preferenceUtils = PreferenceUtils(this)
 
@@ -58,10 +56,18 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
         requestUsageStatsPermission()
     }
 
+    private val grantShizukuPermission = ButtonItem(
+        label = "Grant Shizuku Permission",
+        key = "grant_shizuku_permission",
+        sortKey = "e"
+    ) {
+        ShizukuUtils.requestPermission()
+    }
+
     private val openOverlayItem = ButtonItem(
         label = "Open Overlay Menu",
         key = "open_overlay",
-        sortKey = "e"
+        sortKey = "f"
     ) {
         onOpenOverlayMenu()
     }
@@ -71,6 +77,7 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
         setEsDeMediaPathItem,
         grantOverlayPermissionItem,
         grantUsageStatsPermissionItem,
+        grantShizukuPermission,
         openOverlayItem
     )
 
@@ -100,8 +107,6 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
         recyclerView.itemAnimator = null
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        setupShizuku()
     }
 
     private fun requestDrawOverlayPermission(): Boolean {
@@ -175,37 +180,6 @@ class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListe
             openMenuIntent.putExtra(DataReceiver.COMMAND_EXTRA, "open")
             sendBroadcast(openMenuIntent)
         }
-    }
-
-    private fun setupShizuku(){
-        if(hasShiziukuPermission()){
-
-            val res = Shizuku.pingBinder()
-
-            test()
-
-            return
-        }
-
-        Shizuku.requestPermission(10)
-    }
-
-    private fun hasShiziukuPermission(): Boolean{
-        if (Shizuku.isPreV11() || Shizuku.getVersion() < 11){
-            return false
-        }
-
-        return Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onRequestPermissionResult(requestCode: Int, grantResult: Int) {
-        val isGranted = grantResult == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun test(){
-        val shizukuUtils = ShizukuUtils()
-
-        //val output = shizukuUtils.runCommand("settings put system fan_mode 1");
     }
 
     companion object {
