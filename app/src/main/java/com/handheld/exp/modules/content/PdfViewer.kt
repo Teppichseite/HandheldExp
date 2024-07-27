@@ -8,7 +8,7 @@ import com.handheld.exp.R
 import com.handheld.exp.models.Game
 import java.io.File
 
-class PdfViewer(private val overlayView: View) {
+class PdfViewer(overlayView: View) {
 
     private val pdfView: PDFView = overlayView.findViewById(R.id.pdfView)
     private val pdfViewHolder: View = overlayView.findViewById(R.id.pdfViewHolder)

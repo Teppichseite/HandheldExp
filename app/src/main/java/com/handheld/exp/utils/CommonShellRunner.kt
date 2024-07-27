@@ -1,19 +1,31 @@
 package com.handheld.exp.utils;
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
 
 class CommonShellRunner {
-
-    fun runCommand(command: String): String {
-        // TODO: Handle command execution result and waiting properly
-        val process = Runtime.getRuntime().exec(command)
-        process.waitFor()
-        return ""
-    }
-
-    fun runCommands(commands: List<String>): String {
-        for(command in commands){
-            runCommand(command)
+    companion object{
+        fun runCommands(vararg commands: String): String {
+            return runProcess(Runtime.getRuntime().exec(commandsToShCommand(*commands)))
         }
-        return ""
-    }
 
+        fun commandsToShCommand(vararg commands: String): Array<String>{
+            return arrayOf("sh", "-c", commands.joinToString("\n"))
+        }
+
+        fun runProcess(process: Process): String {
+            val stdOutStream = BufferedReader(InputStreamReader(process.inputStream))
+            val stdErrStream = BufferedReader(InputStreamReader(process.inputStream))
+
+            val stdOut = stdOutStream.readText()
+            val stdErr = stdErrStream.readText()
+
+            stdOutStream.close()
+            stdErrStream.close()
+
+            process.waitFor()
+
+            return "$stdOut\n$stdErr"
+        }
+    }
 }

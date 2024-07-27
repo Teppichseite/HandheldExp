@@ -7,6 +7,8 @@ am broadcast --user $FOREGROUND_USER -a com.handheld.exp.OVERLAY_SERVICE \
   -n com.handheld.exp/.receivers.OverlayServiceReceiver \
   \
 
+sleep 0.5
+
 # Inform the overlay that a game was started
 # via ES-DE and send respective game data
 am broadcast --user $FOREGROUND_USER -a com.handheld.exp.GAME \

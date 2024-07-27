@@ -1,31 +1,28 @@
 package com.handheld.exp
 
 import ItemAdapter
-import android.app.AlarmManager
 import android.app.AppOpsManager
-import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.provider.Settings
-import android.widget.Button
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.Item
 import com.handheld.exp.models.NavigationItem
+import com.handheld.exp.receivers.DataReceiver
+import com.handheld.exp.receivers.OverlayServiceReceiver
+import com.handheld.exp.utils.HandlerUtils
 import com.handheld.exp.utils.PreferenceUtils
+import com.handheld.exp.utils.ShizukuUtils
+import rikka.shizuku.Shizuku
 
-class MainActivity : ComponentActivity() {
-
-    private var esDeFolderButton: Button? = null
-    private var esDeFolderLabel: TextView? = null
+class MainActivity : ComponentActivity(), Shizuku.OnRequestPermissionResultListener {
 
     private val preferenceUtils = PreferenceUtils(this)
 
@@ -103,6 +100,8 @@ class MainActivity : ComponentActivity() {
         recyclerView.itemAnimator = null
 
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        setupShizuku()
     }
 
     private fun requestDrawOverlayPermission(): Boolean {
@@ -148,14 +147,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun handleOverlayPermissionGrant() {
-        if (!Settings.canDrawOverlays(this)) {
-            return
-        }
-
-        startOverlayService()
-    }
-
     private fun handleFolderPermissionGrant(data: Intent?, storageKey: String) {
         if (data == null) {
             return
@@ -171,36 +162,50 @@ class MainActivity : ComponentActivity() {
         preferenceUtils.setPreference(storageKey, uri.toString())
     }
 
-    private fun populateEsDeFolderLabel() {
-        val folderUri = preferenceUtils.getPreference("es_de_folder_uri")
-
-        if (folderUri == null) {
-            this.esDeFolderLabel!!.setText("ES-DE Path: Not set")
-        } else {
-            this.esDeFolderLabel!!.setText("ES-DE Path: $folderUri")
-        }
-    }
-
-    private fun startOverlayService() {
-        val intent = Intent(this, OverlayService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
-    }
-
     private fun onOpenOverlayMenu() {
-        val startOverlayServiceIntent = Intent("com.handheld.exp.OVERLAY_SERVICE")
+        val startOverlayServiceIntent = Intent(OverlayServiceReceiver.OVERLAY_SERVICE_ACTION)
         startOverlayServiceIntent.component = ComponentName(
-            "com.handheld.exp",
+            packageName,
             "com.handheld.exp.receivers.OverlayServiceReceiver"
         )
         sendBroadcast(startOverlayServiceIntent)
 
-        val openMenuIntent = Intent("com.handheld.exp.OVERLAY")
-        openMenuIntent.putExtra("command", "open")
-        sendBroadcast(openMenuIntent)
+        HandlerUtils.runDelayed(200){
+            val openMenuIntent = Intent(DataReceiver.OVERLAY_ACTION)
+            openMenuIntent.putExtra(DataReceiver.COMMAND_EXTRA, "open")
+            sendBroadcast(openMenuIntent)
+        }
+    }
+
+    private fun setupShizuku(){
+        if(hasShiziukuPermission()){
+
+            val res = Shizuku.pingBinder()
+
+            test()
+
+            return
+        }
+
+        Shizuku.requestPermission(10)
+    }
+
+    private fun hasShiziukuPermission(): Boolean{
+        if (Shizuku.isPreV11() || Shizuku.getVersion() < 11){
+            return false
+        }
+
+        return Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun onRequestPermissionResult(requestCode: Int, grantResult: Int) {
+        val isGranted = grantResult == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun test(){
+        val shizukuUtils = ShizukuUtils()
+
+        //val output = shizukuUtils.runCommand("settings put system fan_mode 1");
     }
 
     companion object {

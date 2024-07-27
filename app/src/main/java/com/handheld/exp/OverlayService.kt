@@ -1,6 +1,5 @@
 package com.handheld.exp
 
-import ItemAdapter
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
@@ -8,7 +7,6 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
-import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import android.view.Gravity
@@ -16,18 +14,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.modules.ModuleLoader
 import com.handheld.exp.receivers.DataReceiver
-import java.io.File
-
 
 class OverlayService : Service() {
 
@@ -36,7 +26,7 @@ class OverlayService : Service() {
     private var windowManager: WindowManager? = null
     private var overlayView: View? = null
 
-    private var params: LayoutParams? = null;
+    private var params: LayoutParams? = null
 
     private val overlayViewModel = OverlayViewModel()
 
@@ -56,33 +46,34 @@ class OverlayService : Service() {
 
         createOverlayView()
 
-        createDataReceiver()
-
         handleOverlayDisplay()
 
         val moduleLoader = ModuleLoader(this, overlayViewModel, overlayView!!)
         moduleLoader.loadAll()
+
+        createDataReceiver()
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        return START_STICKY;
+        return START_STICKY
     }
 
     @SuppressLint("ForegroundServiceType")
     @RequiresApi(Build.VERSION_CODES.O)
     private fun startForeground() {
-        val CHANNEL_ID = "channel1"
+        val channelId = "handheld_exp_notification_channel"
         val channel = NotificationChannel(
-            CHANNEL_ID, "Overlay notification", NotificationManager.IMPORTANCE_LOW
+            channelId, "Overlay notification", NotificationManager.IMPORTANCE_LOW
         )
         (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(
             channel
         )
-        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Title")
-            .setContentText("Text")
+        val notification: Notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("HandheldExp")
+            .setContentText("HandheldExp is showing the in-game overlay")
             .setOngoing(true)
             .build()
+
         startForeground(1, notification)
     }
 
@@ -95,7 +86,7 @@ class OverlayService : Service() {
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT,
             type,
-            LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WINDOW_MANAGER_FLAGS,
             PixelFormat.RGBA_8888
         )
 
@@ -110,12 +101,15 @@ class OverlayService : Service() {
         overlayView = LayoutInflater.from(this)
             .inflate(R.layout.overlay_layout, null)
 
-        overlayView!!.setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        )
+        overlayView!!.systemUiVisibility =
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                    View.SYSTEM_UI_FLAG_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 
+        overlayView?.visibility = View.GONE
         windowManager?.addView(overlayView, params)
     }
 
@@ -126,27 +120,24 @@ class OverlayService : Service() {
     }
 
     private fun handleOverlayDisplay() {
-        overlayViewModel.overlayOpened.observeForever(Observer {
-            if (!it) {
-                overlayView?.visibility = View.GONE;
-                return@Observer
-            }
+        overlayViewModel.overlayOpened.observeForever {
+            overlayView?.visibility = if (it) View.VISIBLE else View.GONE
+        }
 
-            overlayView?.visibility = View.VISIBLE;
-        })
-
-        overlayViewModel.overlayFocused.observeForever(Observer {
-            if (!it) {
-                params!!.flags =
-                    LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS or LayoutParams.FLAG_NOT_FOCUSABLE or LayoutParams.FLAG_NOT_TOUCHABLE
-                windowManager!!.updateViewLayout(overlayView, params)
-                return@Observer
-            }
-
-            params!!.flags =
-                LayoutParams.FLAG_LAYOUT_IN_SCREEN or LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        overlayViewModel.overlayFocused.observeForever {
+            val flags = if (it) WINDOW_MANAGER_FLAGS else WINDOW_MANAGER_NOT_FOCUSABLE_FLAGS
+            params!!.flags = flags
             windowManager!!.updateViewLayout(overlayView, params)
-        })
+        }
+    }
+
+    companion object {
+        private const val WINDOW_MANAGER_FLAGS = LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        private const val WINDOW_MANAGER_NOT_FOCUSABLE_FLAGS = LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                LayoutParams.FLAG_NOT_FOCUSABLE
+
     }
 
 }

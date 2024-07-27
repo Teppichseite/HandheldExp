@@ -14,19 +14,30 @@ class ModuleLoader(
     private val overlayView: View
     ) {
 
+    private val modules: MutableList<Module> = mutableListOf()
+
     fun loadAll(){
-        val coreModule = CoreModule(context, viewModel, overlayView)
-        coreModule.onLoad()
+        loadModule { CoreModule(context, viewModel, overlayView) }
 
-        val contentModule = ContentModule(context, viewModel, overlayView)
-        contentModule.onLoad()
+        loadModule { ContentModule(context, viewModel, overlayView) }
 
-        val emulatorModule = EmulatorModule(context, viewModel, overlayView)
-        emulatorModule.onLoad()
+        loadModule { EmulatorModule(context, viewModel, overlayView) }
 
-        val rp4ProModule = Rp4ProModule(context, viewModel, overlayView)
-        rp4ProModule.onLoad()
+        loadModule {
+            if(!Rp4ProModule.canLoad(context)){
+                return@loadModule null
+            }
+            return@loadModule Rp4ProModule(context, viewModel, overlayView)
+        }
 
         viewModel.notifyMenuItemsChanged()
+    }
+
+    private fun loadModule(constructModule: () -> Module?): Module?{
+        val module = constructModule() ?: return null
+
+        modules.add(module)
+        module.onLoad()
+        return module
     }
 }

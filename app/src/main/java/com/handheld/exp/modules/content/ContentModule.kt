@@ -17,10 +17,11 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
 
     private val pdfViewer = PdfViewer(overlayView)
 
-    val showManual = ButtonItem(
+    private val showManual = ButtonItem(
         label = "Show Manual",
         key = "show_manual",
         sortKey = "d",
+        disabled = true
     ) {
         onShowManual()
     }
@@ -40,7 +41,9 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
 
         overlayViewModel.currentGameContext.observeForever {
             if (it == null) {
+                showManual.disabled = true
                 pdfViewer.close()
+                overlayViewModel.notifyMenuItemsChanged()
                 return@observeForever
             }
 
@@ -65,7 +68,6 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
         gameContextHolder.visibility = View.GONE
 
         overlayViewModel.currentGameContext.observeForever {
-
             if (it == null) {
                 gameContextHolder.visibility = View.GONE
                 return@observeForever
@@ -84,12 +86,7 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
                 gameContextImage.setImageURI(Uri.fromFile(File(coverImage)))
             } else {
                 // TODO: Set proper fallback image
-                val drawable = ResourcesCompat.getDrawable(
-                    context.resources,
-                    R.drawable.ic_launcher_background,
-                    null
-                )
-                gameContextImage.setImageDrawable(drawable)
+                gameContextImage.setImageResource(R.drawable.ic_launcher_background)
             }
         }
     }

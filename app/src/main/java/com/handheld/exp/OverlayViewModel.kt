@@ -17,14 +17,12 @@ class OverlayViewModel {
 
     val menuItems = MutableLiveData<MutableList<Item>>()
     val pathHistory = MutableLiveData<ArrayDeque<List<NavigationItem>>>()
-    val focusedItem = MutableLiveData<Item?>()
 
     val currentAppContext = MutableLiveData<AppContext?>()
 
     init {
         menuItems.value = mutableListOf()
         pathHistory.value = ArrayDeque()
-        focusedItem.value = null
         overlayOpened.value = false
 
         menuTitle.value = ""
@@ -50,10 +48,10 @@ class OverlayViewModel {
     }
 
     fun navigateTo(path: List<String>) {
-        val items = path.map { pathPart ->
-            menuItems.value!!.find { item -> item.key == pathPart }
-        }
-            .filterNotNull()
+        val items = path
+            .mapNotNull { pathPart ->
+                menuItems.value!!.find { item -> item.key == pathPart }
+            }
             .map { it as NavigationItem }
 
         pathHistory.value!!.add(items)
@@ -99,7 +97,7 @@ class OverlayViewModel {
         menuItems.value = menuItems.value
     }
 
-    fun startAppContext(appContext: AppContext?){
+    fun startAppContext(appContext: AppContext?) {
         currentAppContext.value = appContext
     }
 

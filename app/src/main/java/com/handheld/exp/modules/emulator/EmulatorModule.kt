@@ -2,8 +2,6 @@ package com.handheld.exp.modules.emulator
 
 import android.content.Context
 import android.content.res.Resources
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import com.handheld.exp.OverlayViewModel
 import com.handheld.exp.R
@@ -12,11 +10,10 @@ import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.models.TextItem
 import com.handheld.exp.modules.Module
 import com.handheld.exp.utils.CommonShellRunner
+import com.handheld.exp.utils.HandlerUtils
 
 class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
-
-    private val shellRunner = CommonShellRunner()
 
     private val overlayMenuHolder: View = overlayView.findViewById(R.id.overlayMenuHolder)
     private val gameContextHolder: View = overlayView.findViewById(R.id.gameContextHolder)
@@ -25,23 +22,24 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
     private var oldMenuHolderPadding = Pair(0, 0)
 
     private val quickLoad = ButtonItem(
-        label = "Quick Load", key = "quick_load", sortKey = "b"
+        label = "Quick Load", key = "quick_load", sortKey = "b",
+        disabled = true
     ) {
         onQuickLoad()
     }
 
     private val quickSave = ButtonItem(
-        label = "Quick Save", key = "quick_save", sortKey = "c"
+        label = "Quick Save", key = "quick_save", sortKey = "c",
+        disabled = true
     ) {
         onQuickSave()
     }
 
     private var keySetupInfo = TextItem(
-        label = "This is some info",
+        label = "Please check the HandheldExp GitHub page on how to Setup Up Save Sates",
         key = "key_setup_info",
         sortKey = "a",
         path = listOf("other_settings", "emulator_key_setup"),
-        disabled = true
     )
 
     private val emulatorKeySetup = NavigationItem(
@@ -51,7 +49,6 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         sortKey = "l0"
     )
 
-
     private val setQuickLoad = ButtonItem(
         label = "Set Quick Load",
         key = "set_quick_load",
@@ -59,7 +56,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         path = listOf("other_settings", "emulator_key_setup"),
         disabled = true
     ) {
-        shellRunner.runCommand(QUICK_LOAD_CMD)
+        CommonShellRunner.runCommands(QUICK_LOAD_CMD)
     }
 
     private val setQuickSave = ButtonItem(
@@ -69,7 +66,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         path = listOf("other_settings", "emulator_key_setup"),
         disabled = true
     ) {
-        shellRunner.runCommand(QUICK_SAVE_CMD)
+        CommonShellRunner.runCommands(QUICK_SAVE_CMD)
     }
 
     private var toggleKeySetup = ButtonItem(
@@ -89,14 +86,20 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         overlayViewModel.menuItems.value?.add(setQuickLoad)
         overlayViewModel.menuItems.value?.add(setQuickSave)
         overlayViewModel.menuItems.value?.add(keySetupInfo)
+
+        overlayViewModel.currentGameContext.observeForever {
+            quickLoad.disabled = it == null
+            quickSave.disabled = it == null
+            overlayViewModel.notifyMenuItemsChanged()
+        }
     }
 
     private fun onQuickLoad() {
-        runInputCommandsOnEmulator(listOf(QUICK_LOAD_CMD), "Loading...")
+        runInputCommandsOnEmulator(arrayOf(QUICK_LOAD_CMD), "Loading...")
     }
 
     private fun onQuickSave() {
-        runInputCommandsOnEmulator(listOf(QUICK_SAVE_CMD), "Saving...")
+        runInputCommandsOnEmulator(arrayOf(QUICK_SAVE_CMD), "Saving...")
     }
 
     private fun onToggleKeySetup() {
@@ -118,9 +121,6 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         )
         overlayViewModel.overlayFocused.value = !isInKeySetup
 
-        keySetupInfo.disabled = !isInKeySetup
-        keySetupInfo.label = "Setting for ${overlayViewModel.currentAppContext.value!!.name}"
-
         setQuickLoad.disabled = !isInKeySetup
         setQuickSave.disabled = !isInKeySetup
 
@@ -137,28 +137,19 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
             .displayMetrics.widthPixels
     }
 
-    private fun runInputCommandsOnEmulator(commands: List<String>, menuTitle: String) {
+    private fun runInputCommandsOnEmulator(commands: Array<String>, menuTitle: String) {
         val oldMenuTitle = overlayViewModel.menuTitle.value
         overlayViewModel.overlayFocused.value = false
         overlayViewModel.menuTitle.value = menuTitle
 
-        runHandlerDelayed(250) {
-            shellRunner.runCommands(commands)
+        HandlerUtils.runDelayed(250) {
+            CommonShellRunner.runCommands(*commands)
         }
 
-        runHandlerDelayed(500) {
+        HandlerUtils.runDelayed(500) {
             overlayViewModel.overlayFocused.value = true
             overlayViewModel.menuTitle.value = oldMenuTitle
         }
-    }
-
-    private fun runHandlerDelayed(delay: Long, callback: () -> Unit) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.postDelayed(
-            {
-                callback()
-            }, delay
-        )
     }
 
     companion object {

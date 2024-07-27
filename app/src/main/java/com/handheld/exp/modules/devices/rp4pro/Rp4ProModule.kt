@@ -1,18 +1,24 @@
 package com.handheld.exp.modules.devices.rp4pro
 
+import android.Manifest
+import android.content.ContentProvider
 import android.content.Context
+import android.content.pm.PackageManager
+import android.provider.Settings
 import android.view.View
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.handheld.exp.OverlayViewModel
-import com.handheld.exp.R
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.models.Option
 import com.handheld.exp.models.OptionItem
 import com.handheld.exp.modules.Module
+import com.handheld.exp.utils.CommonShellRunner
+import com.handheld.exp.utils.ShizukuUtils
+import com.shockwave.pdfium.BuildConfig
 
 class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
-
-    private val shellExecutor = Rp4ProShellRunner()
 
     private val quickSettings = NavigationItem(
         "Quick Settings",
@@ -71,8 +77,8 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
 
     override fun onLoad() {
 
-        //refreshItems()
-        //observeGameContext()
+        refreshItems()
+        observeGameContext()
 
         overlayViewModel.menuItems.value!!.add(quickSettings)
         overlayViewModel.menuItems.value!!.add(performanceModeItem)
@@ -119,12 +125,11 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
     }
 
     private fun getDeviceSetting(settingKey: String): String {
-        return shellExecutor.getIntSystemSetting(settingKey, -1)
-            .toString()
+        return Settings.System.getInt(context.contentResolver, settingKey).toString()
     }
 
     private fun setDeviceSetting(settingKey: String, value: String) {
-        shellExecutor.setIntSystemSetting(settingKey, value.toInt())
+        ShizukuUtils.runCommands("settings put system $settingKey $value");
     }
 
     private fun onGameContextEnd() {
@@ -164,6 +169,10 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         private const val L2R2_MODE_ANALOG = "0"
         private const val L2R2_MODE_DIGITAL = "1"
         private const val L2R2_MODE_BOTH = "2"
+
+        fun canLoad(context: Context): Boolean{
+            return ShizukuUtils.isAvailable()
+        }
     }
 
 }

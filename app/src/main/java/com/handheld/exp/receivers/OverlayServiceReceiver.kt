@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.SystemClock
 import com.handheld.exp.OverlayService
 
 class OverlayServiceReceiver : BroadcastReceiver() {
@@ -37,6 +36,6 @@ class OverlayServiceReceiver : BroadcastReceiver() {
     }
 
     companion object {
-        private const val OVERLAY_SERVICE_ACTION = "com.handheld.exp.OVERLAY_SERVICE"
+        const val OVERLAY_SERVICE_ACTION = "com.handheld.exp.OVERLAY_SERVICE"
     }
 }

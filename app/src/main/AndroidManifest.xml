@@ -6,6 +6,13 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" android:required="false"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" android:required="false"/>
+    <uses-permission android:name="android.permission.QUERY_USERS" android:required="false"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" android:required="false"/>
+
+
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
 
     <application
@@ -44,6 +51,13 @@
                 <action android:name="com.handheld.exp.OVERLAY_SERVICE" />
             </intent-filter>
         </receiver>
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
     </application>
 
 </manifest>

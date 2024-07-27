@@ -4,11 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.Uri
-import android.os.Environment
 import com.handheld.exp.OverlayViewModel
 import com.handheld.exp.utils.GameContextResolver
-import com.handheld.exp.utils.PreferenceUtils
 
 class DataReceiver(
     private val context: Context,
@@ -17,8 +14,6 @@ class DataReceiver(
 
     val overlayFilter = IntentFilter(OVERLAY_ACTION)
     val gameFilter = IntentFilter(GAME_ACTION)
-
-    private val preferenceUtils = PreferenceUtils(context)
 
     override fun onReceive(context: Context, intent: Intent) {
         if(intent.action == OVERLAY_ACTION){
@@ -75,9 +70,9 @@ class DataReceiver(
     }
 
     companion object {
-        private const val OVERLAY_ACTION = "com.handheld.exp.OVERLAY"
-        private const val GAME_ACTION = "com.handheld.exp.GAME"
-        private const val COMMAND_EXTRA = "command"
+        const val OVERLAY_ACTION = "com.handheld.exp.OVERLAY"
+        const val GAME_ACTION = "com.handheld.exp.GAME"
+        const val COMMAND_EXTRA = "command"
     }
 
 }

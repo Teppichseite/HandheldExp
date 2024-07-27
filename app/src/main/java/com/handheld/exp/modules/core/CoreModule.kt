@@ -19,7 +19,6 @@ import com.handheld.exp.utils.CommonShellRunner
 class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
-    private val shellRunner = CommonShellRunner()
     private val appContextResolver = AppContextResolver(context)
 
     private val closeItem = ButtonItem(
@@ -127,7 +126,7 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
         val closeTap = "${(dimensions.widthPixels * 0.95).toInt()} ${swipeFrom.second}"
 
-        val commands = listOf(
+        val commands = arrayOf(
             // Open latest open apps
             "input keyevent KEYCODE_APP_SWITCH",
             "sleep 0.5",
@@ -135,10 +134,10 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
             "input touchscreen swipe $swipe 50",
             "sleep 0.5",
             // Go back to ES_DE
-            "input tap ${closeTap}"
+            "input tap $closeTap"
         )
 
-        shellRunner.runCommands(commands)
+        CommonShellRunner.runCommands(*commands)
     }
 
     private fun handleAppResolving() {
