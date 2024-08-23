@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import com.handheld.exp.OverlayViewModel
+import com.handheld.exp.models.OverlayState
 import com.handheld.exp.utils.GameContextResolver
+import com.handheld.exp.utils.InfoUtils
 
 class DataReceiver(
     private val context: Context,
@@ -16,6 +18,11 @@ class DataReceiver(
     val gameFilter = IntentFilter(GAME_ACTION)
 
     override fun onReceive(context: Context, intent: Intent) {
+
+        if(!InfoUtils.checkIfShizukuIsAvailable(context)){
+            return
+        }
+
         if(intent.action == OVERLAY_ACTION){
             handleOverlayAction(context, intent)
             return
@@ -36,7 +43,7 @@ class DataReceiver(
         }
 
         if(command == "open"){
-            overlayViewModel.openOverlay()
+            overlayViewModel.setOverlay(OverlayState.OPENED)
             return
         }
 

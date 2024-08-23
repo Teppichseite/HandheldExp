@@ -8,15 +8,14 @@ import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.models.Option
 import com.handheld.exp.models.OptionItem
 import com.handheld.exp.modules.Module
+import com.handheld.exp.utils.CommonShellRunner
 import com.handheld.exp.utils.ShizukuUtils
 
 class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
     private val quickSettings = NavigationItem(
-        "Quick Settings",
-        "quick_settings",
-        sortKey = "k0"
+        "Quick Settings", "quick_settings", sortKey = "k0"
     )
 
     private val performanceModeOptions = listOf(
@@ -94,7 +93,7 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
     }
 
     private fun onPerformanceModeOptionChange(option: Option) {
-        setDeviceSetting(PERFORMANCE_MODE, option.key)
+        setPerformanceMode(option.key)
 
         if (option.key == PERFORMANCE_MODE_PERFORMANCE || option.key == PERFORMANCE_MODE_HIGH_PERFORMANCE) {
             fanModeItem.options = fanModeOptions.filter { it.key != FAN_MODE_OFF }
@@ -123,7 +122,13 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
     }
 
     private fun setDeviceSetting(settingKey: String, value: String) {
-        ShizukuUtils.runCommands("settings put system $settingKey $value");
+        CommonShellRunner.runAdbCommands("settings put system $settingKey $value");
+    }
+
+    private fun setPerformanceMode(mode: String) {
+        CommonShellRunner.runAdbCommands(
+            "settings put system $PERFORMANCE_MODE $mode", "setprop $PERFORMANCE_MODE_PROP $mode"
+        )
     }
 
     private fun onGameContextEnd() {
@@ -151,6 +156,8 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         private const val FAN_MODE = "fan_mode"
         private const val L2R2_MODE = "trigger_input_mode"
 
+        private const val PERFORMANCE_MODE_PROP = "persist.vendor.debug.mode"
+
         private const val PERFORMANCE_MODE_STANDARD = "0"
         private const val PERFORMANCE_MODE_PERFORMANCE = "1"
         private const val PERFORMANCE_MODE_HIGH_PERFORMANCE = "2"
@@ -169,11 +176,9 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         private val ALLOWED_VENDOR_NAMES = arrayOf("Q9", "4.0P")
 
         fun canLoad(): Boolean {
-            if (!ShizukuUtils.isAvailable()) {
-                return false
-            }
-
-            val vendorName = ShizukuUtils.runCommands("getprop $KEY_VENDOR_NAME_PROP")
+            val vendorName = CommonShellRunner.runAdbCommands(
+                "getprop $KEY_VENDOR_NAME_PROP"
+            )
 
             return ALLOWED_VENDOR_NAMES.contains(vendorName)
         }

@@ -6,9 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.handheld.exp.OverlayService
+import com.handheld.exp.utils.InfoUtils
 
 class OverlayServiceReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+
+        if(!InfoUtils.checkIfShizukuIsAvailable(context)){
+            return
+        }
+
         if (intent.action != OVERLAY_SERVICE_ACTION) {
             return
         }

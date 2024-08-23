@@ -8,15 +8,14 @@
         android:id="@+id/overlayMenuHolder"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="100dip"
-        android:paddingTop="50dip"
-        android:paddingRight="100dip"
-        android:paddingBottom="50dip">
-
+        android:padding="20dp"
+        >
         <LinearLayout
             android:id="@+id/overlayMenuFrame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="689dip"
+            android:layout_height="400dip"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:alpha="1"
             android:background="@drawable/rounded_bg"
             android:clipToOutline="true"

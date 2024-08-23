@@ -1,10 +1,12 @@
 package com.handheld.exp.utils
 
+import android.app.ActivityManager
 import android.app.usage.UsageEvents.Event
 import android.app.usage.UsageEvents.Event.ACTIVITY_RESUMED
 import android.app.usage.UsageStatsManager
 import android.content.Context
 import com.handheld.exp.models.AppContext
+import rikka.shizuku.SystemServiceHelper
 
 class AppContextResolver(private val context: Context) {
 

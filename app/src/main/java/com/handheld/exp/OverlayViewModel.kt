@@ -5,11 +5,11 @@ import com.handheld.exp.models.AppContext
 import com.handheld.exp.models.GameContext
 import com.handheld.exp.models.Item
 import com.handheld.exp.models.NavigationItem
+import com.handheld.exp.models.OverlayState
 
 class OverlayViewModel {
 
-    val overlayOpened = MutableLiveData<Boolean>()
-    val overlayFocused = MutableLiveData<Boolean>()
+    val overlayState = MutableLiveData<OverlayState>()
 
     val menuTitle = MutableLiveData<String>()
 
@@ -23,7 +23,8 @@ class OverlayViewModel {
     init {
         menuItems.value = mutableListOf()
         pathHistory.value = ArrayDeque()
-        overlayOpened.value = false
+
+        overlayState.value = OverlayState.CLOSED
 
         menuTitle.value = ""
     }
@@ -68,15 +69,20 @@ class OverlayViewModel {
     }
 
     fun closeOverlay() {
-        overlayOpened.value = false
+        overlayState.value = OverlayState.CLOSED
     }
 
-    fun openOverlay() {
-        overlayOpened.value = true
+    fun setOverlay(state: OverlayState) {
+        overlayState.value = state
     }
 
     fun toggleOverlay() {
-        overlayOpened.value = !(overlayOpened.value!!)
+        if(overlayState.value != OverlayState.CLOSED){
+            closeOverlay()
+            return
+        }
+
+        setOverlay(OverlayState.OPENED)
     }
 
     fun startGameContext(

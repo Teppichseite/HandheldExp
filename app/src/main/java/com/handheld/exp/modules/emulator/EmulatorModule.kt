@@ -3,23 +3,27 @@ package com.handheld.exp.modules.emulator
 import android.content.Context
 import android.content.res.Resources
 import android.view.View
+import android.widget.RelativeLayout
 import com.handheld.exp.OverlayViewModel
 import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.NavigationItem
+import com.handheld.exp.models.OverlayState
 import com.handheld.exp.models.TextItem
 import com.handheld.exp.modules.Module
 import com.handheld.exp.utils.CommonShellRunner
 import com.handheld.exp.utils.HandlerUtils
+import com.handheld.exp.utils.InfoUtils
 
 class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
-    private val overlayMenuHolder: View = overlayView.findViewById(R.id.overlayMenuHolder)
+    private val overlayMenuFrame: View = overlayView.findViewById(R.id.overlayMenuFrame)
     private val gameContextHolder: View = overlayView.findViewById(R.id.gameContextHolder)
 
     private var isInKeySetup = false
-    private var oldMenuHolderPadding = Pair(0, 0)
+    private var menuFrameAlignment = MenuFrameAlignment.CENTER
+    private var oldMenuFrameWidth = 0
 
     private val quickLoad = ButtonItem(
         label = "Quick Load", key = "quick_load", sortKey = "b",
@@ -52,7 +56,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
     private val setQuickLoad = ButtonItem(
         label = "Set Quick Load",
         key = "set_quick_load",
-        sortKey = "l2",
+        sortKey = "l3",
         path = listOf("other_settings", "emulator_key_setup"),
         disabled = true
     ) {
@@ -62,7 +66,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
     private val setQuickSave = ButtonItem(
         label = "Set Quick Save",
         key = "set_quick_load",
-        sortKey = "l3",
+        sortKey = "l4",
         path = listOf("other_settings", "emulator_key_setup"),
         disabled = true
     ) {
@@ -78,11 +82,26 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         onToggleKeySetup()
     }
 
+    private val toggleSetupAlignment = ButtonItem(
+        label = "Switch Menu side",
+        key = "toggle_setup_alignment",
+        sortKey = "l2",
+        path = listOf("other_settings", "emulator_key_setup"),
+        disabled = true
+    ) {
+        when(menuFrameAlignment){
+            MenuFrameAlignment.LEFT -> setMenuFrameAlignment(MenuFrameAlignment.RIGHT)
+            MenuFrameAlignment.RIGHT -> setMenuFrameAlignment(MenuFrameAlignment.LEFT)
+            MenuFrameAlignment.CENTER -> {}
+        }
+    }
+
     override fun onLoad() {
         overlayViewModel.menuItems.value?.add(quickLoad)
         overlayViewModel.menuItems.value?.add(quickSave)
         overlayViewModel.menuItems.value?.add(emulatorKeySetup)
         overlayViewModel.menuItems.value?.add(toggleKeySetup)
+        overlayViewModel.menuItems.value?.add(toggleSetupAlignment)
         overlayViewModel.menuItems.value?.add(setQuickLoad)
         overlayViewModel.menuItems.value?.add(setQuickSave)
         overlayViewModel.menuItems.value?.add(keySetupInfo)
@@ -106,32 +125,49 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         isInKeySetup = !isInKeySetup
 
         if (isInKeySetup) {
-            oldMenuHolderPadding =
-                Pair(overlayMenuHolder.paddingLeft, overlayMenuHolder.paddingRight)
+            oldMenuFrameWidth = overlayMenuFrame.width
         }
 
-        val newMenuHolderPadding = if (!isInKeySetup) oldMenuHolderPadding
-        else Pair((getDisplayWidth() * 0.6f).toInt(), 0)
+        val newMenuFrameWidth = if (!isInKeySetup) oldMenuFrameWidth
+        else (getDisplayWidth() * 0.3f).toInt()
 
-        overlayMenuHolder.setPadding(
-            newMenuHolderPadding.first,
-            overlayMenuHolder.paddingTop,
-            newMenuHolderPadding.second,
-            overlayMenuHolder.paddingBottom
-        )
-        overlayViewModel.overlayFocused.value = !isInKeySetup
+        overlayMenuFrame.layoutParams.width = newMenuFrameWidth
+
+        setMenuFrameAlignment(if (!isInKeySetup) MenuFrameAlignment.CENTER else MenuFrameAlignment.RIGHT)
+
+        overlayViewModel.overlayState.value =
+            if (!isInKeySetup) OverlayState.OPENED else OverlayState.OPENED_ONLY_TOUCH
 
         setQuickLoad.disabled = !isInKeySetup
         setQuickSave.disabled = !isInKeySetup
+        toggleSetupAlignment.disabled = !isInKeySetup
 
-        toggleKeySetup.label = if (!isInKeySetup) "Start Setup" else "Stop Setup"
+        toggleKeySetup.label = if (!isInKeySetup) "Start Load/Save Setup" else "Stop Setup"
 
-        if(overlayViewModel.isGameContextActive()){
-            overlayViewModel.currentGameContext.value = overlayViewModel.currentGameContext.value
+        if (overlayViewModel.isGameContextActive()) {
+            gameContextHolder.visibility = if (!isInKeySetup) View.VISIBLE else View.GONE
         }
-        gameContextHolder.visibility = if (!isInKeySetup) View.VISIBLE else View.GONE
 
         overlayViewModel.notifyMenuItemsChanged()
+    }
+
+    private fun setMenuFrameAlignment(newMenuFrameAlignment: MenuFrameAlignment) {
+        val layoutParams = overlayMenuFrame.layoutParams as RelativeLayout.LayoutParams
+
+        layoutParams.removeRule(RelativeLayout.CENTER_HORIZONTAL)
+        layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_LEFT)
+        layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+
+        val verb = when (newMenuFrameAlignment) {
+            MenuFrameAlignment.LEFT -> RelativeLayout.ALIGN_PARENT_LEFT
+            MenuFrameAlignment.RIGHT -> RelativeLayout.ALIGN_PARENT_RIGHT
+            MenuFrameAlignment.CENTER -> RelativeLayout.CENTER_HORIZONTAL
+        }
+        layoutParams.addRule(verb, RelativeLayout.TRUE)
+
+        overlayMenuFrame.layoutParams = layoutParams
+
+        menuFrameAlignment = newMenuFrameAlignment
     }
 
     private fun getDisplayWidth(): Int {
@@ -141,7 +177,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
 
     private fun runInputCommandsOnEmulator(commands: Array<String>, menuTitle: String) {
         val oldMenuTitle = overlayViewModel.menuTitle.value
-        overlayViewModel.overlayFocused.value = false
+        overlayViewModel.overlayState.value = OverlayState.OPENED_ONLY_TOUCH
         overlayViewModel.menuTitle.value = menuTitle
 
         HandlerUtils.runDelayed(250) {
@@ -149,7 +185,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         }
 
         HandlerUtils.runDelayed(500) {
-            overlayViewModel.overlayFocused.value = true
+            overlayViewModel.overlayState.value = OverlayState.OPENED
             overlayViewModel.menuTitle.value = oldMenuTitle
         }
     }
@@ -157,6 +193,12 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
     companion object {
         private const val QUICK_LOAD_CMD = "input text b"
         private const val QUICK_SAVE_CMD = "input text n"
+
+        enum class MenuFrameAlignment {
+            LEFT,
+            RIGHT,
+            CENTER
+        }
     }
 
 }

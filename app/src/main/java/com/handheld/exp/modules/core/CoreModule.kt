@@ -70,6 +70,14 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
     private fun createMenuItemUi() {
         val recyclerView: RecyclerView = overlayView.findViewById(R.id.itemList)
 
+        recyclerView.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+            run {
+                if (!hasFocus) {
+                    recyclerView.requestFocus()
+                }
+            }
+        }
+
         val navigationHandler = object : ItemAdapter.NavigationHandler {
             override fun onNavigateTo(navigationItem: NavigationItem) {
                 val path = navigationItem.path + navigationItem.key
@@ -138,13 +146,20 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         )
 
         CommonShellRunner.runCommands(*commands)
+
+        /*val recentActivitiesString = ShizukuUtils.runCommands("dumpsys activity recents")
+
+        val lastActivity = recentActivitiesString.split("* Recent")[2]
+
+        val regex = """taskId=(\d+)""".toRegex()
+        val matchResult = regex.find(lastActivity)
+        val result = matchResult?.groupValues?.get(1)?.toIntOrNull()
+
+        ShizukuUtils.runCommands("am stack remove $result")*/
     }
 
     private fun handleAppResolving() {
         overlayViewModel.currentGameContext.observeForever {
-            overlayViewModel.startAppContext(appContextResolver.resolve())
-        }
-        overlayViewModel.overlayOpened.observeForever {
             overlayViewModel.startAppContext(appContextResolver.resolve())
         }
     }

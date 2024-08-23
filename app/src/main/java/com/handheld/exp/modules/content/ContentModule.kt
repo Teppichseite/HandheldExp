@@ -9,6 +9,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.handheld.exp.OverlayViewModel
 import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
+import com.handheld.exp.models.OverlayState
 import com.handheld.exp.modules.Module
 import java.io.File
 
@@ -31,8 +32,8 @@ class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overla
 
         overlayViewModel.menuItems.value?.add(showManual)
 
-        overlayViewModel.overlayOpened.observeForever {
-            if (!it || !pdfViewer.isOpened()) {
+        overlayViewModel.overlayState.observeForever {
+            if (it == OverlayState.CLOSED || !pdfViewer.isOpened()) {
                 return@observeForever
             }
 

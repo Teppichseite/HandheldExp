@@ -9,8 +9,7 @@ class ShizukuUtils {
 
         private const val REQUEST_SHIZUKU_PERMISSION_CODE = 0
 
-        fun runCommands(vararg commands: String): String {
-
+        fun exec(command: Array<String>): Process{
             // TODO: This might not work in the future anymore
             // but it right now the easiest way to spawn a ADB shell.
             // Should be replaced in the future with a proper solution
@@ -22,19 +21,11 @@ class ShizukuUtils {
             )
             method.isAccessible = true
 
-            val shCommand = CommonShellRunner.commandsToShCommand(*commands)
-
-            val process = method.invoke(null, shCommand, null, "/") as ShizukuRemoteProcess
-
-            return CommonShellRunner.runProcess(process)
+            return method.invoke(null, command, null, "/") as ShizukuRemoteProcess
         }
 
         fun isAvailable(): Boolean{
-            if(!hasPermission()){
-                return false
-            }
-
-            return Shizuku.pingBinder()
+            return Shizuku.pingBinder() && hasPermission()
         }
 
         private fun hasPermission(): Boolean{

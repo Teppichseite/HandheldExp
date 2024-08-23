@@ -93,7 +93,6 @@ class ItemAdapter(
     }
 
     abstract inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
         protected val labelTextView: TextView = itemView.findViewById(R.id.label)
         protected val selectorView: View = itemView.findViewById(R.id.selector)
         protected val selectorTextView: TextView = itemView.findViewById(R.id.value)

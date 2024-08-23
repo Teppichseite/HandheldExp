@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
@@ -16,8 +17,10 @@ import android.view.WindowManager
 import android.view.WindowManager.LayoutParams
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import com.handheld.exp.models.OverlayState
 import com.handheld.exp.modules.ModuleLoader
 import com.handheld.exp.receivers.DataReceiver
+import com.handheld.exp.utils.DisplayUtils
 
 class OverlayService : Service() {
 
@@ -78,6 +81,7 @@ class OverlayService : Service() {
     }
 
     private fun createWindowManager() {
+
         val type =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) LayoutParams.TYPE_APPLICATION_OVERLAY
             else LayoutParams.TYPE_PHONE
@@ -86,7 +90,7 @@ class OverlayService : Service() {
             LayoutParams.MATCH_PARENT,
             LayoutParams.MATCH_PARENT,
             type,
-            WINDOW_MANAGER_FLAGS,
+            WINDOW_MANAGER_FOCUSED_FLAGS,
             PixelFormat.RGBA_8888
         )
 
@@ -95,6 +99,15 @@ class OverlayService : Service() {
         params!!.gravity = Gravity.TOP or Gravity.LEFT
         params!!.x = 0
         params!!.y = 0
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            params!!.layoutInDisplayCutoutMode =
+                LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+        }
+
+        params!!.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+        DisplayUtils.applyFixedScreenDensity(this, windowManager!!)
     }
 
     private fun createOverlayView() {
@@ -120,21 +133,35 @@ class OverlayService : Service() {
     }
 
     private fun handleOverlayDisplay() {
-        overlayViewModel.overlayOpened.observeForever {
-            overlayView?.visibility = if (it) View.VISIBLE else View.GONE
-        }
-
-        overlayViewModel.overlayFocused.observeForever {
-            val flags = if (it) WINDOW_MANAGER_FLAGS else WINDOW_MANAGER_NOT_FOCUSABLE_FLAGS
-            params!!.flags = flags
-            windowManager!!.updateViewLayout(overlayView, params)
+        overlayViewModel.overlayState.observeForever {
+            when (it) {
+                OverlayState.CLOSED -> overlayView?.visibility = View.GONE
+                OverlayState.OPENED -> {
+                    overlayView?.visibility = View.VISIBLE
+                    setOverlayFlags(WINDOW_MANAGER_FOCUSED_FLAGS)
+                }
+                OverlayState.OPENED_ONLY_TOUCH -> {
+                    overlayView?.visibility = View.VISIBLE
+                    setOverlayFlags(WINDOW_MANAGER_ONLY_TOUCH_FLAGS)
+                }
+                else -> {}
+            }
         }
     }
 
+    private fun setOverlayFlags(flags: Int){
+        if(params!!.flags == flags){
+            return;
+        }
+
+        params!!.flags = flags
+        windowManager!!.updateViewLayout(overlayView, params)
+    }
+
     companion object {
-        private const val WINDOW_MANAGER_FLAGS = LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+        private const val WINDOW_MANAGER_FOCUSED_FLAGS = LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        private const val WINDOW_MANAGER_NOT_FOCUSABLE_FLAGS = LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+        private const val WINDOW_MANAGER_ONLY_TOUCH_FLAGS = LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                 LayoutParams.FLAG_LAYOUT_NO_LIMITS or
                 LayoutParams.FLAG_NOT_FOCUSABLE
 

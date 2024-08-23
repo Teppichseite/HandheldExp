@@ -5,15 +5,25 @@ import java.io.InputStreamReader
 
 class CommonShellRunner {
     companion object{
+
         fun runCommands(vararg commands: String): String {
             return runProcess(Runtime.getRuntime().exec(commandsToShCommand(*commands)))
         }
 
-        fun commandsToShCommand(vararg commands: String): Array<String>{
+        fun runAdbCommands(vararg commands: String): String {
+            if(!ShizukuUtils.isAvailable()){
+                throw Exception("Shizuku is not available")
+            }
+
+            return runProcess(ShizukuUtils.exec(commandsToShCommand(*commands)))
+        }
+
+        private fun commandsToShCommand(vararg commands: String): Array<String>{
             return arrayOf("sh", "-c", commands.joinToString("\n"))
         }
 
-        fun runProcess(process: Process): String {
+        // TODO: Perform call async
+        private fun runProcess(process: Process): String {
             val stdOutStream = BufferedReader(InputStreamReader(process.inputStream))
             val stdErrStream = BufferedReader(InputStreamReader(process.inputStream))
 
@@ -25,7 +35,11 @@ class CommonShellRunner {
 
             process.waitFor()
 
-            return "$stdOut$stdErr"
+            if(process.exitValue() != 0){
+                throw Exception(stdErr)
+            }
+
+            return stdOut
         }
     }
 }

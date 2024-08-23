@@ -1,10 +1,9 @@
 package com.handheld.exp
 
 import ItemAdapter
-import android.app.AppOpsManager
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -16,6 +15,7 @@ import com.handheld.exp.models.Item
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.receivers.DataReceiver
 import com.handheld.exp.receivers.OverlayServiceReceiver
+import com.handheld.exp.utils.DisplayUtils
 import com.handheld.exp.utils.HandlerUtils
 import com.handheld.exp.utils.PreferenceUtils
 import com.handheld.exp.utils.ShizukuUtils
@@ -48,14 +48,6 @@ class MainActivity : ComponentActivity() {
         requestDrawOverlayPermission()
     }
 
-    private val grantUsageStatsPermissionItem = ButtonItem(
-        label = "Grant Usage Stats Permission",
-        key = "grant_usage_stats_permission",
-        sortKey = "d"
-    ) {
-        requestUsageStatsPermission()
-    }
-
     private val grantShizukuPermission = ButtonItem(
         label = "Grant Shizuku Permission",
         key = "grant_shizuku_permission",
@@ -76,18 +68,21 @@ class MainActivity : ComponentActivity() {
         setEsDePathItem,
         setEsDeMediaPathItem,
         grantOverlayPermissionItem,
-        grantUsageStatsPermissionItem,
         grantShizukuPermission,
         openOverlayItem
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         setContentView(R.layout.main_activity_layout);
         createUi()
     }
 
     private fun createUi() {
+
+        DisplayUtils.applyFixedScreenDensity(this, this.windowManager)
+
         val recyclerView: RecyclerView = findViewById(R.id.mainActivityItemList)
 
         val navigationHandler = object : ItemAdapter.NavigationHandler {
@@ -116,16 +111,6 @@ class MainActivity : ComponentActivity() {
         )
         startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION_CODE)
         return false
-    }
-
-    private fun requestUsageStatsPermission() {
-        val appOpsManager = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-        val mode = appOpsManager.checkOpNoThrow(
-            AppOpsManager.OPSTR_GET_USAGE_STATS,
-            android.os.Process.myUid(), packageName
-        )
-
-        startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
     }
 
     private fun requestEsDeFolderPathAndPermission() {
