@@ -29,7 +29,7 @@
                 android:background="@color/frame"
                 android:fontFamily="@font/akrobat_semibold"
                 android:padding="5dip"
-                android:text="Play Menu"
+                android:text="Quick Menu"
                 android:textAlignment="center"
                 android:textAllCaps="true"
                 android:textColor="@color/text"
@@ -69,10 +69,58 @@
 
             <include layout="@layout/horizontal_divider_layout" />
 
-            <View
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="30dip"
-                android:background="@color/frame" />
+                android:layout_height="wrap_content"
+                android:background="@color/frame"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                >
+
+
+                <TextView
+                    android:id="@+id/timeInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/frame"
+                    android:fontFamily="@font/akrobat_semibold"
+                    android:text="20:44"
+                    android:textAlignment="textStart"
+                    android:textAllCaps="true"
+                    android:textColor="@color/text"
+                    android:textSize="20dip" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    >
+
+                    <ImageView
+                        android:layout_width="20dip"
+                        android:layout_height="20dip"
+                        android:src="@drawable/battery"
+                        android:tint="@color/text"
+                        />
+
+                    <TextView
+                        android:id="@+id/batteryInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/frame"
+                        android:fontFamily="@font/akrobat_semibold"
+                        android:text="100%"
+                        android:textAlignment="textEnd"
+                        android:textAllCaps="true"
+                        android:textColor="@color/text"
+                        android:textSize="20dip" />
+
+
+                </LinearLayout>
+
+            </RelativeLayout>
         </LinearLayout>
 
     </RelativeLayout>

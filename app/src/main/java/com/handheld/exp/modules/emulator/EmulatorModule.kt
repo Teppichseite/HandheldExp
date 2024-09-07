@@ -43,13 +43,13 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         label = "Please check the HandheldExp GitHub page on how to Setup Up Save Sates",
         key = "key_setup_info",
         sortKey = "a",
-        path = listOf("other_settings", "emulator_key_setup"),
+        path = listOf("settings", "emulator_key_setup"),
     )
 
     private val emulatorKeySetup = NavigationItem(
         label = "Load/Save Setup",
         key = "emulator_key_setup",
-        path = listOf("other_settings"),
+        path = listOf("settings"),
         sortKey = "l0"
     )
 
@@ -57,7 +57,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         label = "Set Quick Load",
         key = "set_quick_load",
         sortKey = "l3",
-        path = listOf("other_settings", "emulator_key_setup"),
+        path = listOf("settings", "emulator_key_setup"),
         disabled = true
     ) {
         CommonShellRunner.runCommands(QUICK_LOAD_CMD)
@@ -67,7 +67,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         label = "Set Quick Save",
         key = "set_quick_load",
         sortKey = "l4",
-        path = listOf("other_settings", "emulator_key_setup"),
+        path = listOf("settings", "emulator_key_setup"),
         disabled = true
     ) {
         CommonShellRunner.runCommands(QUICK_SAVE_CMD)
@@ -77,7 +77,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         label = "Start Load/Save Setup",
         key = "toggle_key_setup",
         sortKey = "l1",
-        path = listOf("other_settings", "emulator_key_setup")
+        path = listOf("settings", "emulator_key_setup")
     ) {
         onToggleKeySetup()
     }
@@ -86,7 +86,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         label = "Switch Menu side",
         key = "toggle_setup_alignment",
         sortKey = "l2",
-        path = listOf("other_settings", "emulator_key_setup"),
+        path = listOf("settings", "emulator_key_setup"),
         disabled = true
     ) {
         when(menuFrameAlignment){

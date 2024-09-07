@@ -1,33 +1,33 @@
 # HandheldExp
 An **in game menu** for [ES-DE](https://es-de.org/) on Android.
 
-<img src="./assets/images/showcase-static.png" alt="Showcase static" width="600"/>
+<img src="./assets/images/screen1.png" alt="Showcase static" width="600"/>
 
 ## 📋 Features
 
-There is **no root required**. To have full feature support [Shizuku](https://shizuku.rikka.app/) can be **optionally** installed. The features of **HandheldExp** are currently the following:
+There is **no root required**. Instead [Shizuku](https://shizuku.rikka.app/) has to be installed. The features of **HandheldExp** are currently the following:
 
 1. **Uniform** in game menu across all emulators and apps 
 2. Display of **Information** and **Game Art** of current game
 3. In-Game **Manual Viewer**
 4. **Quick Save** and **Quick load** for supported Emulators
 5. **Automatically closing** latest emulator when returning to ES-DE
+6. **Quick Actions** like changing brightness level or Airplane mode
 5. **Device specific** features like changing the **Performance Mode** via menu
 
 Below you can see **certain demonstrations** of the in game menu:
 
-<img src="./assets/images/showcase-video.gif" alt="Showcase video" width="600"/>
-<img src="./assets/images/manual.png" alt="Showcase static" width="300"/>
-<img src="./assets/images/performance.png" alt="Showcase static" width="300"/>
+<img src="./assets/images/video.gif" alt="Showcase video" width="600"/>
+<img src="./assets/images/screen3.png" alt="Showcase static" width="300"/>
+<img src="./assets/images/screen2.png" alt="Showcase static" width="300"/>
 
 ## 🚀 Steps for the future
 
 Currently **HandheldExp** is still in an early phase, and therefore there are certain features planned for the future. These are:
 
-1. Supporting more **Quick Actions** (e.g. changing the screen brightness or Wifi mode)
-2. **Opening Android Apps** directly via the in game menu
-3. Support **Quick Save/Load** for Emulators which do **not** have **hotkey** support (e.g. Dolphin)
-4. **Saving** device specific settings **per game** (e.g. Performance mode)
+1. Support **Quick Save/Load** for Emulators which do **not** have **hotkey** support (e.g. Dolphin)
+2. **Saving** device specific settings **per game** (e.g. Performance mode)
+3. Supporting more **device specific features** for various handheld devices
 
 ## ⚙️ Installation
 
@@ -38,6 +38,7 @@ The following guide will demonstrate how to **install** and **setup** HandheldEx
 2. The **following apps** have to be installed
     1. [ES-DE](https://es-de.org/#Download) Android as Frontend
     2. [KeyMapper](https://play.google.com/store/apps/details?id=io.github.sds100.keymapper&hl=de) to map the opening and closing button for the Menu
+    3. [Shizuku](https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api) to give HandheldExp privileged permissions
 3. Download the **HandhelpExp APK** from GitHub and install it on your device
 4. **Setup ES-DE**
     1. Perform all the required setup steps for your emulators
@@ -66,6 +67,8 @@ The following guide will demonstrate how to **install** and **setup** HandheldEx
     2. Search for ES-DE
     3. Force close the app
     4. Close the Settings App
+7. **Setup Shizuku**
+    1. Follow [this guide](https://shizuku.rikka.app/guide/setup/#start-shizuku) to start Shizuku
 8. **Setup KeyMapper**
     1. Open KeyMapper
     2. Follow the instructions to setup KeyMapper
@@ -87,9 +90,8 @@ The following guide will demonstrate how to **install** and **setup** HandheldEx
     3. Set the location of your ES-DE media folder
         1. This is by default the folder `downloaded_media` under the ES-DE folder
     4. Grant overlay permission
-    5. Grant usage stats permission
+    5. Grant Shizuku permission
     6. You can click the button "Open overlay menu" to test if the menu is appearing
-    7. Fully close HandheldExp by swiping it away
 10. **Test if everyhing works**
     1. Open a game via ES-DE
     2. Press the menu toggle button you set in Keymapper
@@ -105,7 +107,7 @@ The following guide will demonstrate how to **setup** Quick Save/Load for Handhe
 1. **Quick Save** and **Quick Load** have to be setup for **every emulator** individually
 2. As long as the emulator **supports hotkeys** for Quick Save/Load, HandheldExp is able to **integrate** with it
 3. Currently it is **confirmed** that the following emulators **support** Quick Save/Load with HandheldExp
-    1. RetroArch, DuckStation, PPSSPP, Flycast, AetherSX2/NetherSX2, Mupen64Plus, Citra PabloMK7
+    1. RetroArch, DuckStation, PPSSPP, Flycast, AetherSX2/NetherSX2, Mupen64Plus, Citra PabloMK7, Mandarine
 4. The following **guide** will show how to setup Quick Save/Load for **RetroArch**
     1. For other emulators the setup follows a similar principle
     2. Open RetroArch
@@ -129,20 +131,14 @@ HandheldExp also supports **features specifically tailored** for **certain devic
     2. Fan mode selection via Menu
     3. Trigger mode selection via Menu
     4. Fan and Performance mode will automatically reset when returning back to ES-DE
-2. **Required setup**
-    1. Install [Shizuku](https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api)
-    2. Follow [this guide](https://shizuku.rikka.app/guide/setup/#start-shizuku) to start Shizuku
-    3. Open HandheldExp and grant the Shizuku permission
-    4. Fully close HandheldExp
-    5. Next time your are launching a game via ES-DE and open the in game menu, there will be new menu item "Quick Actions" which gives you access to the mentioned features
+2. **Disclaimer**: Extra features might stop working when upgrading to a new firmare for the respective devices or behave unexpectedly
 
 ### 🎮 Other devices
 1. Currently other devices do not have support for **extra features**
 2. It is **planned** to add extra support for other device such as
     1. Anbernic RG556 
     2. Anbernic RG Cube
-
-**Disclaimer**: Extra features might stop working when upgrading to a new firmare for the respective devices or behave unexpectedly
+    3. Other potential Android Handhelds
 
 <!---
 ## 🛠️ Building

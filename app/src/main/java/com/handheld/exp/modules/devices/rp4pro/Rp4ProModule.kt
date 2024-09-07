@@ -14,10 +14,6 @@ import com.handheld.exp.utils.ShizukuUtils
 class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
-    private val quickSettings = NavigationItem(
-        "Quick Settings", "quick_settings", sortKey = "k0"
-    )
-
     private val performanceModeOptions = listOf(
         Option("Standard", PERFORMANCE_MODE_STANDARD),
         Option("Performance", PERFORMANCE_MODE_PERFORMANCE),
@@ -27,8 +23,8 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
     private val performanceModeItem = OptionItem(
         label = "Performance Mode",
         key = PERFORMANCE_MODE,
-        path = listOf("quick_settings"),
-        sortKey = "a",
+        path = listOf("quick_actions"),
+        sortKey = "n0",
         options = performanceModeOptions
     ) {
         onPerformanceModeOptionChange(it)
@@ -44,8 +40,8 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
     private val fanModeItem = OptionItem(
         label = "Fan Mode",
         key = FAN_MODE,
-        path = listOf("quick_settings"),
-        sortKey = "b",
+        path = listOf("quick_actions"),
+        sortKey = "n1",
         options = fanModeOptions
     ) {
         onFanModeOptionChange(it)
@@ -60,8 +56,8 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
     private val l2r2ModeItem = OptionItem(
         label = "L2/R2 Mode",
         key = L2R2_MODE,
-        path = listOf("quick_settings"),
-        sortKey = "c",
+        path = listOf("quick_actions"),
+        sortKey = "n2",
         options = l2r2ModeOptions
     ) {
         onl2r2OptionChange(it)
@@ -72,7 +68,6 @@ class Rp4ProModule(context: Context, overlayViewModel: OverlayViewModel, overlay
         refreshItems()
         observeGameContext()
 
-        overlayViewModel.menuItems.value!!.add(quickSettings)
         overlayViewModel.menuItems.value!!.add(performanceModeItem)
         overlayViewModel.menuItems.value!!.add(fanModeItem)
         overlayViewModel.menuItems.value!!.add(l2r2ModeItem)

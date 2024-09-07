@@ -7,6 +7,8 @@ import com.handheld.exp.modules.content.ContentModule
 import com.handheld.exp.modules.core.CoreModule
 import com.handheld.exp.modules.devices.rp4pro.Rp4ProModule
 import com.handheld.exp.modules.emulator.EmulatorModule
+import com.handheld.exp.modules.quickactions.QuickActionsModule
+import com.handheld.exp.modules.settings.SettingsModule
 
 class ModuleLoader(
     private val context: Context,
@@ -19,7 +21,11 @@ class ModuleLoader(
     fun loadAll(){
         loadModule { CoreModule(context, viewModel, overlayView) }
 
+        loadModule { SettingsModule(context, viewModel, overlayView) }
+
         loadModule { ContentModule(context, viewModel, overlayView) }
+
+        loadModule { QuickActionsModule(context, viewModel, overlayView) }
 
         loadModule { EmulatorModule(context, viewModel, overlayView) }
 

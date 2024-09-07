@@ -62,7 +62,9 @@
                 android:text="Test"
                 android:textAllCaps="true"
                 android:fontFamily="@font/akrobat_semibold"
-                android:padding="2dp"/>
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                />
 
             <ImageView
                 android:tint="@color/text"

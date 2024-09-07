@@ -3,7 +3,6 @@ package com.handheld.exp.modules.core
 import ItemAdapter
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,13 +12,13 @@ import com.handheld.exp.R
 import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.modules.Module
-import com.handheld.exp.utils.AppContextResolver
+import com.handheld.exp.utils.AppUtils
 import com.handheld.exp.utils.CommonShellRunner
 
 class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
-    private val appContextResolver = AppContextResolver(context)
+    private val appUtils = AppUtils(context)
 
     private val closeItem = ButtonItem(
         label = "Resume", key = "close", sortKey = "a",
@@ -33,18 +32,10 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         onExit()
     }
 
-    private val otherSettings =
-        NavigationItem(
-            label = "Other Settings",
-            key = "other_settings",
-            sortKey = "l"
-        )
-
     override fun onLoad() {
         createMenuItemUi()
 
         overlayViewModel.menuItems.value?.add(closeItem)
-        overlayViewModel.menuItems.value?.add(otherSettings)
         overlayViewModel.menuItems.value?.add(exitItem)
 
         overlayViewModel.currentGameContext.observeForever {
@@ -122,45 +113,25 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
     private fun closeLatestApp() {
 
-        val dimensions = Resources.getSystem().displayMetrics
+        val currentApps = appUtils.getCurrentlyOpenedApps()
 
-        val swipeFrom = Pair(dimensions.widthPixels / 2, dimensions.heightPixels / 2)
+        currentApps
+            .filter {
+                !(it.isEsDe || it.isSelf)
+            }
+            .forEach {
 
-        val swipeTo = Pair(swipeFrom.first, dimensions.heightPixels * 0.1)
+                if (it.taskId == null) {
+                    return@forEach
+                }
 
-        val swipe = listOf(swipeFrom.first, swipeFrom.second, swipeTo.first, swipeTo.second)
-            .map { it.toInt() }
-            .joinToString(" ")
-
-        val closeTap = "${(dimensions.widthPixels * 0.95).toInt()} ${swipeFrom.second}"
-
-        val commands = arrayOf(
-            // Open latest open apps
-            "input keyevent KEYCODE_APP_SWITCH",
-            "sleep 0.5",
-            // Close app on the left side
-            "input touchscreen swipe $swipe 50",
-            "sleep 0.5",
-            // Go back to ES_DE
-            "input tap $closeTap"
-        )
-
-        CommonShellRunner.runCommands(*commands)
-
-        /*val recentActivitiesString = ShizukuUtils.runCommands("dumpsys activity recents")
-
-        val lastActivity = recentActivitiesString.split("* Recent")[2]
-
-        val regex = """taskId=(\d+)""".toRegex()
-        val matchResult = regex.find(lastActivity)
-        val result = matchResult?.groupValues?.get(1)?.toIntOrNull()
-
-        ShizukuUtils.runCommands("am stack remove $result")*/
+                appUtils.removeTask(it.taskId)
+            }
     }
 
     private fun handleAppResolving() {
         overlayViewModel.currentGameContext.observeForever {
-            overlayViewModel.startAppContext(appContextResolver.resolve())
+
         }
     }
 }
