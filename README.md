@@ -17,9 +17,11 @@ There is **no root required**. Instead [Shizuku](https://shizuku.rikka.app/) has
 
 Below you can see **certain demonstrations** of the in game menu:
 
+<p float="left">
 <img src="./assets/images/video.gif" alt="Showcase video" width="600"/>
 <img src="./assets/images/screen3.png" alt="Showcase static" width="300"/>
 <img src="./assets/images/screen2.png" alt="Showcase static" width="300"/>
+</p>
 
 ## 🚀 Steps for the future
 
