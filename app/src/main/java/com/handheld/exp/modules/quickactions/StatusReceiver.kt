@@ -51,13 +51,11 @@ class StatusReceiver(
         val batteryManager = context.getSystemService(BATTERY_SERVICE) as BatteryManager
         val batteryLevel = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
 
-        //batteryInfoView.text = "$batteryLevel%"
-        batteryInfoView.text = "100%"
+        batteryInfoView.text = "$batteryLevel%"
     }
 
     private fun updateTimeInfo(){
-        //timeInfoView.text = formatTimeBasedOnSettings(context, Date())
-        timeInfoView.text = "08:00 AM"
+        timeInfoView.text = formatTimeBasedOnSettings(context, Date())
     }
 
     private fun formatTimeBasedOnSettings(context: Context, date: Date): String {
