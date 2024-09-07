@@ -109,7 +109,7 @@ The following guide will demonstrate how to **setup** Quick Save/Load for Handhe
 1. **Quick Save** and **Quick Load** have to be setup for **every emulator** individually
 2. As long as the emulator **supports hotkeys** for Quick Save/Load, HandheldExp is able to **integrate** with it
 3. Currently it is **confirmed** that the following emulators **support** Quick Save/Load with HandheldExp
-    1. RetroArch, DuckStation, PPSSPP, Flycast, AetherSX2/NetherSX2, Mupen64Plus, Citra PabloMK7, Mandarine
+    1. RetroArch, DuckStation, PPSSPP, Flycast, AetherSX2/NetherSX2, Mupen64Plus, Citra PabloMK7, Mandarine, DraStic
 4. The following **guide** will show how to setup Quick Save/Load for **RetroArch**
     1. For other emulators the setup follows a similar principle
     2. Open RetroArch
@@ -124,7 +124,7 @@ The following guide will demonstrate how to **setup** Quick Save/Load for Handhe
     9. Click on via touch on "Stop Setup"
     10. The setup for RetroArch is now done
 
-## 🤖 Setup Device Specific Features
+## 🤖 Device Specific Features
 HandheldExp also supports **features specifically tailored** for **certain devices**. The following **lists the devices** those extra features are supported for:
     
 ### 🎮 Retroid Pocket 4 Pro / Ayn Odin 2 / Ayn Odin 2 Mini

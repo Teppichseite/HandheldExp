@@ -13,7 +13,6 @@ import com.handheld.exp.models.ButtonItem
 import com.handheld.exp.models.NavigationItem
 import com.handheld.exp.modules.Module
 import com.handheld.exp.utils.AppUtils
-import com.handheld.exp.utils.CommonShellRunner
 
 class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
@@ -45,8 +44,6 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
             closeLatestApp()
         }
-
-        handleAppResolving()
     }
 
     private fun onExit() {
@@ -56,6 +53,7 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
         overlayViewModel.closeOverlay()
         context.startActivity(startMain)
+        closeLatestApp()
     }
 
     private fun createMenuItemUi() {
@@ -127,11 +125,5 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
                 appUtils.removeTask(it.taskId)
             }
-    }
-
-    private fun handleAppResolving() {
-        overlayViewModel.currentGameContext.observeForever {
-
-        }
     }
 }

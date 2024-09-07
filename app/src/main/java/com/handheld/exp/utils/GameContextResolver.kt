@@ -20,12 +20,8 @@ class GameContextResolver(private val context: Context) {
         systemFullName: String
     ): GameContext {
 
-        val esDeFolderUri = preferenceUtils.getPreference("es_de_folder_uri")
-
-        val esDeFolderPath = "${Environment.getExternalStorageDirectory()}/${
-            Uri.parse(esDeFolderUri).path!!.split(":")
-                .last()
-        }"
+        val esDeFolderPath = getFolderPathFromPreference("es_de_folder_uri")
+        val esDeMediaFolderPath = getFolderPathFromPreference("es_de_media_folder_uri")
 
         val game = Game(
             name = gameName
@@ -36,23 +32,30 @@ class GameContextResolver(private val context: Context) {
             fullName = systemFullName
         )
 
-        val defaultRootMediaPath = "$esDeFolderPath/downloaded_media"
-
         val gameMedia = GameMedia(
             mixImagePath = getMediaPath(
-                defaultRootMediaPath, gamePath, systemName, "miximages", "png"
+                esDeMediaFolderPath, gamePath, systemName, "miximages", "png"
             ),
             coverPath = getMediaPath(
-                defaultRootMediaPath, gamePath, systemName, "covers", "png"
+                esDeMediaFolderPath, gamePath, systemName, "covers", "png"
             ),
             manualPath = getMediaPath(
-                defaultRootMediaPath, gamePath, systemName, "manuals", "pdf"
+                esDeMediaFolderPath, gamePath, systemName, "manuals", "pdf"
             )
         )
 
         return GameContext(
             esDeFolderPath, game, system, gameMedia
         )
+    }
+
+    private fun getFolderPathFromPreference(key: String): String {
+        val folderUri = preferenceUtils.getPreference(key)
+
+        return "${Environment.getExternalStorageDirectory()}/${
+            Uri.parse(folderUri).path!!.split(":")
+                .last()
+        }"
     }
 
     private fun getMediaPath(
@@ -62,10 +65,7 @@ class GameContextResolver(private val context: Context) {
         mediaType: String,
         extension: String
     ): String? {
-        val gameName = gamePath.split("/")
-            .last()
-            .split(".")
-            .first()
+        val gameName = File(gamePath).nameWithoutExtension
             .replace("\\", "")
 
         val mediaPath = "$rootMediaPath/$systemName/$mediaType/$gameName.$extension"

@@ -60,7 +60,9 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         path = listOf("settings", "emulator_key_setup"),
         disabled = true
     ) {
-        CommonShellRunner.runCommands(QUICK_LOAD_CMD)
+        HandlerUtils.runDelayed(0) {
+            CommonShellRunner.runAdbCommands(QUICK_LOAD_CMD)
+        }
     }
 
     private val setQuickSave = ButtonItem(
@@ -70,7 +72,9 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         path = listOf("settings", "emulator_key_setup"),
         disabled = true
     ) {
-        CommonShellRunner.runCommands(QUICK_SAVE_CMD)
+        HandlerUtils.runDelayed(0) {
+            CommonShellRunner.runAdbCommands(QUICK_SAVE_CMD)
+        }
     }
 
     private var toggleKeySetup = ButtonItem(
@@ -181,7 +185,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         overlayViewModel.menuTitle.value = menuTitle
 
         HandlerUtils.runDelayed(250) {
-            CommonShellRunner.runCommands(*commands)
+            CommonShellRunner.runAdbCommands(*commands)
         }
 
         HandlerUtils.runDelayed(500) {
