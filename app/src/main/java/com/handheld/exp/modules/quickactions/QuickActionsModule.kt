@@ -195,6 +195,9 @@ class QuickActionsModule(context: Context, overlayViewModel: OverlayViewModel, o
     }
 
     private fun roundByStep(value: Int, step: Int): Int {
+        if(value <= step){
+            return step;
+        }
         return (ceil((value / step).toDouble()) * step).toInt();
     }
 

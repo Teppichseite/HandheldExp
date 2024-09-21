@@ -1,5 +1,7 @@
 package com.handheld.exp.modules.content
 
+import android.content.Context
+import android.graphics.PointF
 import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
@@ -8,7 +10,8 @@ import com.handheld.exp.R
 import com.handheld.exp.models.Game
 import java.io.File
 
-class PdfViewer(overlayView: View) {
+
+class PdfViewer(val context: Context, overlayView: View) {
 
     private val pdfView: PDFView = overlayView.findViewById(R.id.pdfView)
     private val pdfViewHolder: View = overlayView.findViewById(R.id.pdfViewHolder)
@@ -112,7 +115,7 @@ class PdfViewer(overlayView: View) {
                     return true
                 }
 
-                pdfView.zoomTo(newZoom)
+                pdfView.zoomCenteredTo(newZoom, getScreenCenter())
                 refresh()
                 return true
             }
@@ -129,12 +132,18 @@ class PdfViewer(overlayView: View) {
                     return true
                 }
 
-                pdfView.zoomTo(newZoom)
+                pdfView.zoomCenteredTo(newZoom, getScreenCenter())
                 refresh()
                 return true
             }
         }
         return false
+    }
+
+    private fun getScreenCenter(): PointF
+    {
+        val metrics = context.resources.displayMetrics;
+        return PointF((metrics.widthPixels/2).toFloat(), (metrics.heightPixels/2).toFloat());
     }
 
     private fun refresh(){

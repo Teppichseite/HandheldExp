@@ -79,6 +79,10 @@ class AppUtils(private val context: Context) {
         CommonShellRunner.runAdbCommands("am stack remove $taskId")
     }
 
+    fun stopApp(packageName: String){
+        CommonShellRunner.runAdbCommands("am force-stop $packageName")
+    }
+
     fun closeCurrentApp(): AppContext? {
         val currentApp = getCurrentApp()
 

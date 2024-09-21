@@ -16,7 +16,7 @@ import java.io.File
 class ContentModule(context: Context, overlayViewModel: OverlayViewModel, overlayView: View) :
     Module(context, overlayViewModel, overlayView) {
 
-    private val pdfViewer = PdfViewer(overlayView)
+    private val pdfViewer = PdfViewer(context, overlayView)
 
     private val showManual = ButtonItem(
         label = "Show Manual",

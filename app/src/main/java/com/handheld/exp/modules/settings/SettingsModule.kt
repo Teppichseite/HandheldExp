@@ -48,6 +48,7 @@ class SettingsModule(context: Context, overlayViewModel: OverlayViewModel, overl
             label = "Reopen current app",
             key = "reopen_current_app",
             sortKey = "l4",
+            disabled = true,
             path = listOf("settings")
         ){
             reopenCurrentApp()

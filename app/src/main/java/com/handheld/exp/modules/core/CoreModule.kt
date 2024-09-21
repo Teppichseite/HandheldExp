@@ -123,6 +123,7 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
                     return@forEach
                 }
 
+                appUtils.stopApp(it.packageName)
                 appUtils.removeTask(it.taskId)
             }
     }
