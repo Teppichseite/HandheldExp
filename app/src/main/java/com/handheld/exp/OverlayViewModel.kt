@@ -29,17 +29,17 @@ class OverlayViewModel {
         menuTitle.value = ""
     }
 
-    fun getCurrentMenuItems(): List<Item> {
+    fun getCurrentMenuItems(customFilter: (Item, String) -> Boolean = { item, path -> false }): List<Item> {
         val currentPathStr = pathHistory.value?.lastOrNull()
             ?.joinToString(".") { it.key } ?: ""
 
         return menuItems.value!!
-            .filter { !it.disabled }
             .filter {
                 val itemPathStr = it.path.joinToString(".")
 
-                itemPathStr == currentPathStr
+                itemPathStr == currentPathStr || customFilter(it, currentPathStr)
             }
+            .filter { !it.disabled }
             .sortedBy { it.sortKey }
     }
 
@@ -77,7 +77,7 @@ class OverlayViewModel {
     }
 
     fun toggleOverlay() {
-        if(overlayState.value != OverlayState.CLOSED){
+        if (overlayState.value != OverlayState.CLOSED) {
             closeOverlay()
             return
         }

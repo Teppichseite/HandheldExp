@@ -30,6 +30,7 @@ class DisplayUtils {
             val dp = (referenceDpi * screenHeight) / referenceHeight
 
             configuration.densityDpi = dp.toInt()
+            configuration.orientation = Configuration.ORIENTATION_LANDSCAPE
 
             context.resources.updateConfiguration(configuration, metrics)
         }

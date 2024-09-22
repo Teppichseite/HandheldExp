@@ -19,6 +19,12 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
 
     private val appUtils = AppUtils(context)
 
+    private val backItem = ButtonItem(
+        label = "Back", key = "back", sortKey = "a", path = listOf("none")
+    ) {
+        overlayViewModel.navigateBack()
+    }
+
     private val closeItem = ButtonItem(
         label = "Resume", key = "close", sortKey = "a",
     ) {
@@ -34,6 +40,7 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
     override fun onLoad() {
         createMenuItemUi()
 
+        overlayViewModel.menuItems.value?.add(backItem)
         overlayViewModel.menuItems.value?.add(closeItem)
         overlayViewModel.menuItems.value?.add(exitItem)
 
@@ -56,16 +63,13 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         closeLatestApp()
     }
 
+    private fun focusItem(recyclerView: RecyclerView, index: Int){
+        val firstChild = recyclerView.getChildAt(index)
+        firstChild?.requestFocus()
+    }
+
     private fun createMenuItemUi() {
         val recyclerView: RecyclerView = overlayView.findViewById(R.id.itemList)
-
-        recyclerView.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            run {
-                if (!hasFocus) {
-                    recyclerView.requestFocus()
-                }
-            }
-        }
 
         val navigationHandler = object : ItemAdapter.NavigationHandler {
             override fun onNavigateTo(navigationItem: NavigationItem) {
@@ -89,19 +93,25 @@ class CoreModule(context: Context, overlayViewModel: OverlayViewModel, overlayVi
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         overlayViewModel.menuItems.observeForever {
-            adapter.setItems(overlayViewModel.getCurrentMenuItems())
+            adapter.setItems(overlayViewModel.getCurrentMenuItems { item, path ->
+                return@getCurrentMenuItems item == backItem && path != ""
+            })
         }
+
+        focusItem(recyclerView, 0)
 
         val menuTitle: TextView = overlayView.findViewById(R.id.menuTitle)
         overlayViewModel.pathHistory.observeForever {
-            adapter.setItems(overlayViewModel.getCurrentMenuItems())
+            overlayViewModel.notifyMenuItemsChanged()
             if (overlayViewModel.getCurrentNavigationItem() == null) {
                 overlayViewModel.menuTitle.value = "Play Menu"
+                focusItem(recyclerView, 0)
                 return@observeForever
             }
 
             overlayViewModel.menuTitle.value =
                 overlayViewModel.getCurrentNavigationItem()?.label
+            focusItem(recyclerView, 1)
         }
 
         overlayViewModel.menuTitle.observeForever {

@@ -145,6 +145,7 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         setQuickLoad.disabled = !isInKeySetup
         setQuickSave.disabled = !isInKeySetup
         toggleSetupAlignment.disabled = !isInKeySetup
+        toggleBackButton(isInKeySetup)
 
         toggleKeySetup.label = if (!isInKeySetup) "Start Load/Save Setup" else "Stop Setup"
 
@@ -153,6 +154,12 @@ class EmulatorModule(context: Context, overlayViewModel: OverlayViewModel, overl
         }
 
         overlayViewModel.notifyMenuItemsChanged()
+    }
+
+    private fun toggleBackButton(disabled: Boolean){
+        val backButton = overlayViewModel.menuItems.value?.find { it.key == "back" } ?: return
+
+        backButton.disabled = disabled
     }
 
     private fun setMenuFrameAlignment(newMenuFrameAlignment: MenuFrameAlignment) {
