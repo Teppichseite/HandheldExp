@@ -6,13 +6,8 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
-
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" android:required="false"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" android:required="false"/>
     <uses-permission android:name="android.permission.QUERY_USERS" android:required="false"/>
     <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" android:required="false"/>
-
-
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
 
     <application
