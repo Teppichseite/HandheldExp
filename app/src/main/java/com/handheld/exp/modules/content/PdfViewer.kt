@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.widget.TextView
 import com.github.barteksc.pdfviewer.PDFView
+import com.github.barteksc.pdfviewer.util.FitPolicy
 import com.handheld.exp.R
 import com.handheld.exp.models.Game
 import java.io.File
@@ -38,6 +39,8 @@ class PdfViewer(val context: Context, overlayView: View) {
             val file = File(pdfPath)
             pdfView
                 .fromFile(file)
+                .pageFitPolicy(FitPolicy.HEIGHT)
+                .fitEachPage(true)
                 .load()
             this.pdfPath = pdfPath
         }
